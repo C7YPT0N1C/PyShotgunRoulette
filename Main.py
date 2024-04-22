@@ -65,23 +65,14 @@ def GameRounds(GameRound, Lives, ShellCount, ShotgunBalance):
         print("\n\n##### ROUND 2 #####")
 
 def StartGame(ShotgunBalance):
-    if ShotgunBalance == False:
-        #GameRounds(LM.GameRound, 1, 5, False)
-        GameRounds(LM.GameRound, 8, 16, False)
+    #GameRounds(LM.GameRound, 1, 5, ShotgunBalance)
+    GameRounds(LM.GameRound, 20, 32, ShotgunBalance)
         
-        LM.GameRound += 1
+    #LM.GameRound += 1
+    #GameRounds(LM.GameRound, 3, 8, ShotgunBalance)
 
-        #GameRounds(LM.GameRound, 3, 8, False)
-        #GameRounds(LM.GameRound, 3, 16, False)
-    
-    else:
-        #GameRounds(LM.GameRound, 1, 5, True)
-        GameRounds(LM.GameRound, 5, 16, True)
-        
-        LM.GameRound += 1
-
-        #GameRounds(LM.GameRound, 3, 8, True)
-        #GameRounds(LM.GameRound, 3, 16, True)
+    #LM.GameRound += 1
+    #GameRounds(LM.GameRound, 5, 16, ShotgunBalance)
 
 ######################################## MAIN RUNTIME ########################################
 

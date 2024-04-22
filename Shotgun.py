@@ -2,10 +2,16 @@ import random
 
 # L = Live, B = Blank, E = Empty
 ShellTypes = ["L", "B"] # Ensures only Live ("L") or Blank ("B") shells can be loaded into the shotgun.
-Shotgun = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
+Shotgun = [] # List of loaded shells.
 ShellCount = 0
 LiveShells = 0
 BlankShells = 0
+
+def SetShotgun():
+    global Shotgun
+
+    #Shotgun = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"] # 16 Shells + extra "E" as check.
+    Shotgun = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"] # 32 Shells + extra "E" as check.
 
 def LoadShotgun(ShellNo, Balanced):
     # Shells = How many shells to load
@@ -19,7 +25,7 @@ def LoadShotgun(ShellNo, Balanced):
 
     ShellCount = ShellNo
 
-    Shotgun = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"] # Reset chamber
+    SetShotgun() # Reset chamber
 
     if Balanced == False: # Random loading of shotgun.
         for Shell in range(ShellCount):

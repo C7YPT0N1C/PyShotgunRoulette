@@ -32,8 +32,7 @@ PlayerDecisions = [] # List of the moves The Player has made.
 DealerDecisions = [] # List of the moves The Dealer has made.
 CorrectDecision = [] # List of the correct type of shell (generated as each shell is shot.)
 
-AnalysisReturnMin = 50 # Minimum result of analysis for a positive to be returned. (Default = 25).
-AnalysisReturnMax = 1000 # Maxiumum result of analysis for a positive to be returned. (Default = 100).
+AnalysisReturnMin = 50 # Minimum result of analysis for a positive to be returned. (Default = 50).
 
 ChancePerShell = 0 # Chance for a shell to be shot.
 LiveChance = 0 # Chance for a live shell to be shot.
@@ -89,9 +88,15 @@ def ConfirmAnalysis(Type, Analysis): # Makes a decision depending on results of 
     if Type == "Live":
         #AnalysisPrint() # Print Analysis Stuff
 
-        if (Analysis <= AnalysisReturnMax and Analysis >= AnalysisReturnMin) or (Analysis >= BlankChance): # Continue with decision if results of analysis are within the positive range, or higher than a chance of shooting a blank.
-            #if (Analysis >= BlankChance):
-            #    print("\nAnalysis >= BlankChance")
+        #if Analysis >= AnalysisReturnMin and (Analysis <= LiveChance or Analysis >= BlankChance):
+        if Analysis >= AnalysisReturnMin or Analysis >= BlankChance:
+        # Continue with decision if results of analysis are within the positive range, or higher than a chance of shooting a blank.
+            
+            print("Analysis = ", Analysis)
+            if (Analysis >= LiveChance):
+                print("\nAnalysis >= AnalysisReturnMin")
+            if (Analysis >= BlankChance):
+                print("\nAnalysis >= BlankChance")
             
             #print("\n(After analysing the previous turns, The Dealer thinks it is", Analysis, "% Live).")
             print("\n(The Dealer is sure of its decision.)")
@@ -106,9 +111,15 @@ def ConfirmAnalysis(Type, Analysis): # Makes a decision depending on results of 
     if Type == "Blank":
         #AnalysisPrint() # Print Analysis Stuff
 
-        if (Analysis <= AnalysisReturnMax and Analysis >= AnalysisReturnMin) or (Analysis >= LiveChance): # Continue with decision if results of analysis are within the positive range, or higher than a chance of shooting a live.
-            #if (Analysis >= LiveChance):
-            #    print("\nAnalysis >= LiveChance")
+        #if Analysis >= AnalysisReturnMin and (Analysis <= BlankChance and Analysis >= LiveChance):
+        if Analysis >= AnalysisReturnMin or Analysis >= LiveChance:
+        # Continue with decision if results of analysis are within the positive range, or higher than a chance of shooting a live.
+            
+            print("Analysis = ", Analysis)
+            if (Analysis >= LiveChance):
+                print("\nAnalysis >= AnalysisReturnMin")
+            if (Analysis >= LiveChance):
+                print("\nAnalysis >= LiveChance")
             
             #print("\n(After analysing the previous turns, The Dealer thinks it is", Analysis, "% Blank.)")
             print("\n(The Dealer is sure of its decision.)")
