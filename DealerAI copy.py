@@ -87,14 +87,8 @@ def Track(Target, Decision): # Updates lists as decisions are made and shells ar
 def ConfirmAnalysis(Type, Analysis): # Makes a decision depending on results of analysis.
     if Type == "Live":
         #AnalysisPrint() # Print Analysis Stuff
-        if Analysis >= AnalysisReturnMin or Analysis >= BlankChance:
+        if Analysis >= AnalysisReturnMin and (Analysis <= LiveChance or Analysis >= BlankChance):
         # Continue with decision if results of analysis are within the positive range, or higher than a chance of shooting a blank.
-            print("Analysis = ", Analysis)
-            if (Analysis >= LiveChance):
-                print("\nAnalysis >= AnalysisReturnMin")
-            if (Analysis >= BlankChance):
-                print("\nAnalysis >= BlankChance")
-            
             #print("\n(After analysing the previous turns, The Dealer thinks it is", Analysis, "% Live).")
             print("\n(The Dealer is sure of its decision.)")
             return "ShootPlayer" # Return decision.
@@ -107,14 +101,8 @@ def ConfirmAnalysis(Type, Analysis): # Makes a decision depending on results of 
     
     if Type == "Blank":
         #AnalysisPrint() # Print Analysis Stuff
-        if Analysis >= AnalysisReturnMin or Analysis >= LiveChance:
+        if Analysis >= AnalysisReturnMin and (Analysis <= BlankChance and Analysis >= LiveChance):
         # Continue with decision if results of analysis are within the positive range, or higher than a chance of shooting a live.
-            print("Analysis = ", Analysis)
-            if (Analysis >= LiveChance):
-                print("\nAnalysis >= AnalysisReturnMin")
-            if (Analysis >= LiveChance):
-                print("\nAnalysis >= LiveChance")
-            
             #print("\n(After analysing the previous turns, The Dealer thinks it is", Analysis, "% Blank.)")
             print("\n(The Dealer is sure of its decision.)")
             return "ShootSelf" # Return decision.
