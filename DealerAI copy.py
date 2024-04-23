@@ -32,7 +32,9 @@ PlayerDecisions = [] # List of the moves The Player has made.
 DealerDecisions = [] # List of the moves The Dealer has made.
 CorrectDecision = [] # List of the correct type of shell (generated as each shell is shot.)
 
+AnalysisReturnMax = 100 # Minimum result of analysis for a positive to be returned. (Default = 100).
 AnalysisReturnMin = 50 # Minimum result of analysis for a positive to be returned. (Default = 50).
+AnalysisResultBuffer = 25
 
 ChancePerShell = 0 # Chance for a shell to be shot.
 LiveChance = 0 # Chance for a live shell to be shot.
@@ -41,16 +43,9 @@ BlankChance = 0 # Chance for a blank shell to be shot.
 ######################################## DEBUG STUFF ########################################
 
 def Debug(): # Print variables.
-    global ChancePerShell
-    global LiveChance
-    global BlankChance
-
-    print("\nLive Shells:", Shotgun.LiveShells)
-    print("Blank Shells:", Shotgun.BlankShells)
-
     print("\nChance Per Shell = ", ChancePerShell)
-    print("LiveChance:", LiveChance)
-    print("BlankChance:", BlankChance)
+    print("Live Chance:", LiveChance, "%.")
+    print("Blank Chance:", BlankChance, "%.")
 
 def AnalysisPrint(): # Prints the lists.
     print("\nPlayer Decisions: ", PlayerDecisions)
@@ -85,15 +80,17 @@ def Track(Target, Decision): # Updates lists as decisions are made and shells ar
 ######################################## ANALYSIS STUFF ########################################
 
 def ConfirmAnalysis(Type, Analysis): # Makes a decision depending on results of analysis.
+    print("\nAnalysis = ", Analysis, "%.")
+
     if Type == "Live":
         #AnalysisPrint() # Print Analysis Stuff
-        if Analysis >= AnalysisReturnMin and (Analysis <= LiveChance or Analysis >= BlankChance):
+        #print("\n(After analysing the previous turns, The Dealer thinks it is", Analysis, "% Blank).")
+        
+        if Analysis >= BlankChance:
         # Continue with decision if results of analysis are within the positive range, or higher than a chance of shooting a blank.
-            #print("\n(After analysing the previous turns, The Dealer thinks it is", Analysis, "% Live).")
             print("\n(The Dealer is sure of its decision.)")
             return "ShootPlayer" # Return decision.
         else:
-            #print("\n(After analysing the previous turns, The Dealer thinks it is", Analysis, "% Live.)")
             print("\n(The Dealer is unsure of its decision and changes its mind.)")
             
             Track("Dealer", "Self") # Update list of previous moves made.
@@ -101,22 +98,49 @@ def ConfirmAnalysis(Type, Analysis): # Makes a decision depending on results of 
     
     if Type == "Blank":
         #AnalysisPrint() # Print Analysis Stuff
-        if Analysis >= AnalysisReturnMin and (Analysis <= BlankChance and Analysis >= LiveChance):
+        #print("\n(After analysing the previous turns, The Dealer thinks it is", Analysis, "% Live.)")
+        
+        if Analysis >= LiveChance:
         # Continue with decision if results of analysis are within the positive range, or higher than a chance of shooting a live.
-            #print("\n(After analysing the previous turns, The Dealer thinks it is", Analysis, "% Blank.)")
             print("\n(The Dealer is sure of its decision.)")
             return "ShootSelf" # Return decision.
         else:
-            #print("\n(After analysing the previous turns, The Dealer thinks it is", Analysis, "% Blank.")
             print("\n(The Dealer is unsure of its decision and changes its mind.)")
-            
             Track("Dealer", "Enemy") # Update list of previous moves made.
             return "ShootPlayer" # Return decision.
         
 ################################################################################
 
 def Analyse(Decision): # Analyses the lists for The Dealer to make a decision. Returns the percentage of confidence.
-    if Decision == "Live": # If The Dealer's initial calculation of odds suggests that the current shell is a live.
+    if Decision == "Live": # The Dealer thinks the current shell is a live. Check how often The Dealer and the player have correctely guessed "blank". Return this value as a percentage.
+        if CorrectDecision.count("B") != 0 and DealerDecisions.count("B") != 0 and  PlayerDecisions.count("B") != 0:
+            DealerCorrectCount = 0
+            for i in range (0, len(CorrectDecision)):
+                if DealerDecisions[i] == "B" and CorrectDecision[i] == "B":
+                    DealerCorrectCount = DealerCorrectCount + 1
+
+            PlayerCorrectCount = 0
+            for i in range (0, len(CorrectDecision)):
+                if PlayerDecisions[i] == "B" and CorrectDecision[i] == "B":
+                    PlayerCorrectCount = PlayerCorrectCount + 1
+            
+            if DealerCorrectCount == 0: # Anti Zero Error. Minimal effect on calculations.
+                DealerCorrectCount = 1
+            if PlayerCorrectCount == 0:
+                PlayerCorrectCount = 1
+            
+            #print("\nCorrect Blank Count = ", CorrectDecision.count("B"))
+            #print("Dealer Correct Count = ", DealerCorrectCount)
+            #print("Player Correct Count = ", PlayerCorrectCount)
+
+            ShellCount = CorrectDecision.count("B") # Set "ShellCount" variable.
+            Analysis = ((((DealerCorrectCount + PlayerCorrectCount) / 2) / ShellCount) * 100)
+            return ConfirmAnalysis("Blank", Analysis)
+        else:
+            print("\n(Dealer does not enough data to analyse past turns.)")
+            return "ShootPlayer"
+    
+    if Decision == "Blank": # The Dealer thinks the current shell is a blank. Check how often The Dealer and the player have correctely guessed "live". Return this value as a percentage.
         if CorrectDecision.count("L") != 0 and DealerDecisions.count("L") != 0 and  PlayerDecisions.count("L") != 0: # Makes sure lists arent empty to avoid divide by zero error.
             DealerCorrectCount = 0
             for i in range (0, len(CorrectDecision)):
@@ -136,40 +160,12 @@ def Analyse(Decision): # Analyses the lists for The Dealer to make a decision. R
             #print("\nCorrect Live Count = ", CorrectDecision.count("L"))
             #print("Dealer Correct Count = ", DealerCorrectCount)
             #print("Player Correct Count = ", PlayerCorrectCount)
-
+            
             ShellCount = CorrectDecision.count("L") # Set "ShellCount" variable.
-            Analysis = int(100 / (ShellCount / (DealerCorrectCount + PlayerCorrectCount)))
+            Analysis = ((((DealerCorrectCount + PlayerCorrectCount) / 2) / ShellCount) * 100)
             return ConfirmAnalysis("Live", Analysis)
         else:
-            #print("\n(Dealer does not enough data to analyse past turns.)")
-            return "ShootPlayer"
-    
-    if Decision == "Blank": # If The Dealer's initial calculation of odds suggests that the current shell is a blank.
-        if CorrectDecision.count("B") != 0 and DealerDecisions.count("B") != 0 and  PlayerDecisions.count("B") != 0:
-            DealerCorrectCount = 0
-            for i in range (0, len(CorrectDecision)):
-                if DealerDecisions[i] == "B" and CorrectDecision[i] == "B":
-                    DealerCorrectCount = DealerCorrectCount + 1
-
-            PlayerCorrectCount = 0
-            for i in range (0, len(CorrectDecision)):
-                if PlayerDecisions[i] == "B" and CorrectDecision[i] == "B":
-                    PlayerCorrectCount = PlayerCorrectCount + 1
-            
-            if DealerCorrectCount == 0: # Anti Zero Error. Minimal effect on calculations.
-                DealerCorrectCount = 1
-            if PlayerCorrectCount == 0:
-                PlayerCorrectCount = 1
-            
-            #print("\nCorrect Live Count = ", CorrectDecision.count("L"))
-            #print("Dealer Correct Count = ", DealerCorrectCount)
-            #print("Player Correct Count = ", PlayerCorrectCount)
-            
-            ShellCount = CorrectDecision.count("B") # Set "ShellCount" variable.
-            Analysis = int(100 / (ShellCount / (DealerCorrectCount + PlayerCorrectCount)))
-            return ConfirmAnalysis("Blank", Analysis)
-        else:
-            #print("\n(Dealer does not enough data to analyse past turns.)")
+            print("\n(Dealer does not enough data to analyse past turns.)")
             return "ShootSelf"
 
 ######################################## DECISION STUFF ########################################
@@ -202,10 +198,10 @@ def Turn(AILevel):
     #ChanceUseItem = random.randint(1, MaxChoices)
 
     ChancePerShell = int(100 / (Shotgun.LiveShells + Shotgun.BlankShells)) # Calculate chance for a shell to be shot.
-    LiveChance = (ChancePerShell * Shotgun.LiveShells) # Calculate chance for a live shell to be shot.
-    BlankChance = (ChancePerShell * Shotgun.BlankShells) # Calculate chance for a blank shell to be shot.
+    LiveChance = ((Shotgun.LiveShells / (Shotgun.LiveShells + Shotgun.BlankShells)) * 100) # Calculate chance for a live shell to be shot.
+    BlankChance = ((Shotgun.BlankShells / (Shotgun.LiveShells + Shotgun.BlankShells)) * 100) # Calculate chance for a blank shell to be shot.
 
-    #Debug() # Print debug.
+    Debug() # Print debug.
 
     #Outcome = 0
 
@@ -225,24 +221,24 @@ def Turn(AILevel):
     
     if AILevel == 2:
         if LiveChance > BlankChance: # If shell more likely to be a live, analyse chance of shell being a live.
-            #print("\n(The Dealer's initial thought: a Live.)")
+            print("\n(The Dealer's initial thought: a Live.)")
             return ReturnDecision("Live") # See function.
         
         if BlankChance > LiveChance: # If shell more likely to be a blank, analyse chance of shell being a blank.
-            #print("\n(The Dealer's initial thought: a Blank.)")
+            print("\n(The Dealer's initial thought: a Blank.)")
             return ReturnDecision("Blank") # See function.
         
         if LiveChance == BlankChance: # If shell equally likely to be a live or a blank, analyse chances.
-            #print("\n(After calculating the odds, The Dealer thinks it is an equal chance.)")
+            print("\n(After calculating the odds, The Dealer thinks it is an equal chance.)")
             RandomChoice = random.randint(0,1)
             #print("Random Choice = ", RandomChoice)
 
             if RandomChoice == 0: # "A Live" randomly chosen.
-                #print("\n(The Dealer's random guess: a Live.)")
+                print("\n(The Dealer's random guess: a Live.)")
                 return ReturnDecision("Live") # See function.
             
             if RandomChoice == 1: # "A Blank" randomly chosen.
-                #print("\n(The Dealer's random guess: a Blank.)")
+                print("\n(The Dealer's random guess: a Blank.)")
                 return ReturnDecision("Blank") # See function.
 
 ######################################## TESTING STUFF ########################################
