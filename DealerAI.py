@@ -122,7 +122,7 @@ def Analyse(): # Analyses the lists for The Dealer to make a decision. Returns t
         ShellCount = CorrectDecision.count("L") # Set "ShellCount" variable.
         LiveAnalysis = ((((DealerCorrectCount + PlayerCorrectCount) / 2) / ShellCount) * 100)
     else:
-        print("\n(Not enough live shells have been shot to analyse.)")
+        #print("\n(Not enough live shells have been shot to analyse.)")
         LiveAnalysis = 100
     
     if CorrectDecision.count("B") != 0 and DealerDecisions.count("B") != 0 and  PlayerDecisions.count("B") != 0:
@@ -148,7 +148,7 @@ def Analyse(): # Analyses the lists for The Dealer to make a decision. Returns t
         ShellCount = CorrectDecision.count("B") # Set "ShellCount" variable.
         BlankAnalysis = ((((DealerCorrectCount + PlayerCorrectCount) / 2) / ShellCount) * 100)
     else:
-        print("\n(Not enough blank shells have been shot to analyse.)")
+        #print("\n(Not enough blank shells have been shot to analyse.)")
         BlankAnalysis = 100
     
     if LiveAnalysis >= BlankAnalysis:
@@ -187,7 +187,7 @@ def Turn(AILevel):
     LiveChance = ((Shotgun.LiveShells / (Shotgun.LiveShells + Shotgun.BlankShells)) * 100) # Calculate chance for a live shell to be shot.
     BlankChance = ((Shotgun.BlankShells / (Shotgun.LiveShells + Shotgun.BlankShells)) * 100) # Calculate chance for a blank shell to be shot.
 
-    Debug() # Print debug.
+    #Debug() # Print debug.
 
     #Outcome = 0
 

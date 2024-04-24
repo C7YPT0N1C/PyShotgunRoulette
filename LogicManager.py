@@ -49,7 +49,7 @@ def GUI(Element, Modifier):
             print("Next Shell Is:", CheckNextShell()) 
 
         if Modifier == "Report": 
-            GUI("Shotgun", "Debug") # Basically cheats.
+            #GUI("Shotgun", "Debug") # Basically cheats.
             
             print("\n! There are ", Shotgun.LiveShells, "Live Shells left. !")
             print("! There are ", Shotgun.BlankShells, "Blank Shells left. !")
