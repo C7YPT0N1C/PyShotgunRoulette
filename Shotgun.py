@@ -58,3 +58,19 @@ def LoadShotgun(ShellNo, Balanced):
     
     LiveShells = Shotgun.count("L")
     BlankShells = Shotgun.count("B")
+
+def CheckCurrentShell(): 
+    if Shotgun[0] == "L":
+        return "Live"
+    if Shotgun[0] == "B":
+        return "Blank"
+    if Shotgun[0] == "E" or Shotgun[1] == "":
+        return "Empty"
+
+def CheckNextShell(): 
+    if Shotgun[1] == "L":
+        return "Live"
+    if Shotgun[1] == "B":
+        return "Blank"
+    if Shotgun[1] == "E" or Shotgun[1] == "":
+        return "Empty"
