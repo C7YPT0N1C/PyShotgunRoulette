@@ -1,7 +1,3 @@
-import Shotgun
-import PlayerUI
-import DealerAI as DAI
-
 ######################################## DECLARE VARIABLES ########################################
 
 GameMode = 1

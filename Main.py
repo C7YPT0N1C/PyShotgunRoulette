@@ -1,9 +1,6 @@
-import VariableManager as VM
-import PlayerUI
-
 import Shotgun
-#import PlayerUI
-import DealerAI as DAI
+import VariableManager as VM
+import TurnManager
 
 ######################################## GUI ########################################
 
@@ -18,10 +15,10 @@ import DealerAI as DAI
 
 def GUI(Element, Modifier):
     if Element == "LiveShell" and Modifier == 0:
-        DAI.Track("System", "Live")
+        TurnManager.Track("System", "Live")
         print("\n! It was a Live. !")
     if Element == "BlankShell" and Modifier == 0:
-        DAI.Track("System", "Blank")
+        TurnManager.Track("System", "Blank")
         print("\n! It was a Blank. !")
 
     if Element == "PlayerDied" and Modifier == "Player1":
@@ -157,7 +154,7 @@ def PlayerTurn(Player):
         
         PrintLives()
 
-        Outcome = PlayerUI.Turn(VM.GameMode, CurrentTurn)
+        Outcome = TurnManager.Turn(VM.GameMode, CurrentTurn, VM.AILevel)
         #print("Outcome is: ", Outcome)
 
         if VM.GameMode == 2: # Player 1 VS Player 2.
@@ -199,7 +196,7 @@ def PlayerTurn(Player):
         print("\n### Player 2's Turn:")
         PrintLives()
 
-        Outcome = PlayerUI.Turn(VM.GameMode, CurrentTurn)
+        Outcome = TurnManager.Turn(VM.GameMode, CurrentTurn, VM.AILevel)
         #print("Outcome is: ", Outcome)
 
         if Outcome == "ShootPlayer2":
@@ -225,7 +222,7 @@ def DealersTurn():
     print("\n### Dealer's Turn:")
     PrintLives()
 
-    Outcome = DAI.Turn(VM.AILevel)
+    Outcome = TurnManager.Turn(VM.GameMode, CurrentTurn, VM.AILevel)
     #print("Outcome is: ", Outcome)
     
     if Outcome == "ShootSelf":
