@@ -272,64 +272,59 @@ def GameRounds(GameRound, Lives, ShellCount, ShotgunBalance):
     while CurrentShell != "Empty": # Only runs whilst shotgun has loaded shells.
         CurrentShell = Shotgun.CheckCurrentShell() # Update current shell
 
-        ###### Player 1's Turn ######
-        if VM.PlayerLives != 0: # Only runs whilst Player 1 isnt dead.
-            if CurrentShell != "Empty": # Only runs whilst shotgun has loaded shells.
-                
-                if VM.GameMode == 2: # Player 1 VS Player 2.
-                    if VM.Player2Lives != 0: # Only runs whilst Player 2 isnt dead.
-                        PlayerTurn(1) # Calls for Player 1's turn.
-                    else:
-                        GUI("PlayerDied", "Player2") # Report that Player 2 died.
-                        break # Exit loop
-                
-                else: # Player 1 VS AI.
-                    if VM.DealerLives != 0: # Only runs whilst The Dealer isnt dead.
-                        PlayerTurn(1) # Calls for Player 1's turn.
-                    else:
-                        GUI("PlayerDied", "Dealer") # Report that Dealer died.
-                        break # Exit loop
+        if VM.GameMode == 1: # Player 1 VS Dealer.
+            ###### Player 1's Turn ######
+            if VM.PlayerLives != 0 and VM.DealerLives != 0 and CurrentShell != "Empty": # Only runs whilst Player 1 or The Dealer isnt dead, and whilst the shotgun has loaded shells.
+                PlayerTurn(1) # Calls for Player 1's turn.
             else:
-                GUI("Shotgun", "Empty") # Report that shotgun chamber is empty.
+                if VM.PlayerLives == 0:
+                    GUI("PlayerDied", "Player1") # Report that Player died.
+                if VM.DealerLives == 0:
+                    GUI("PlayerDied", "Dealer") # Report that Dealer died.
+                if CurrentShell == "Empty":
+                    GUI("Shotgun", "Empty") # Report that shotgun chamber is empty.
                 break
-        else:
-            GUI("PlayerDied", "Player1") # Report that Player died.
-            break
-        ###### Player 1's Turn ######
+            ###### Player 1's Turn ######
 
-        ###### Player 2's Turn ######
-        if VM.GameMode == 2: # Player 1 VS Player 2.
-            if VM.Player2Lives != 0: # Only runs whilst Player 2 isnt dead.
-                if CurrentShell != "Empty":
-                    if VM.PlayerLives != 0: # Only runs whilst Player 1 isnt dead.
-                        PlayerTurn(2) # Calls for Player 2's turn.
-                    else:
-                        GUI("PlayerDied", "Player1") # Report that Player 1 died.
-                        break
-                else:
-                    GUI("Shotgun", "Empty") # Report that shotgun chamber is empty.
-                    break
+            ###### Dealer's Turn ######
+            if VM.PlayerLives != 0 and VM.DealerLives != 0 and CurrentShell != "Empty": # Only runs whilst Player 1 or The Dealer isnt dead, and whilst the shotgun has loaded shells.
+                DealersTurn() # Calls for Player 1's turn.
             else:
-                GUI("PlayerDied", "Player2") # Report that Player 2 died.
+                if VM.PlayerLives == 0:
+                    GUI("PlayerDied", "Player1") # Report that Player died.
+                if VM.DealerLives == 0:
+                    GUI("PlayerDied", "Dealer") # Report that Dealer died.
+                if CurrentShell == "Empty":
+                    GUI("Shotgun", "Empty") # Report that shotgun chamber is empty.
                 break
-        ###### Player 2's Turn ######
+            ###### Dealer's Turn ######
         
-        ###### The Dealer's Turn ######
-        else: # Player 1 VS AI.
-            if VM.DealerLives != 0:
-                if CurrentShell != "Empty":
-                    if VM.PlayerLives != 0:
-                        DealersTurn() # Calls for Dealer's turn.
-                    else:
-                        GUI("PlayerDied", "Player1") # Report that Player died.
-                        break
-                else:
-                    GUI("Shotgun", "Empty") # Report that shotgun chamber is empty.
-                    break
+        else: # Player 1 VS Player 2.
+            ###### Player 1's Turn ######
+            if VM.PlayerLives != 0 and VM.Player2Lives != 0 and CurrentShell != "Empty": # Only runs whilst Player 1 or Player 2 isnt dead, and whilst the shotgun has loaded shells.
+                PlayerTurn(1) # Calls for Player 1's turn.
             else:
-                GUI("PlayerDied", "Dealer") # Report that Dealer died.
+                if VM.PlayerLives == 0:
+                    GUI("PlayerDied", "Player1") # Report that Player died.
+                if VM.Player2Lives == 0:
+                    GUI("PlayerDied", "Player2") # Report that Dealer died.
+                if CurrentShell == "Empty":
+                    GUI("Shotgun", "Empty") # Report that shotgun chamber is empty.
                 break
-        ###### The Dealer's Turn ######
+            ###### Player 1's Turn ######
+
+            ###### Player 2's Turn ######
+            if VM.PlayerLives != 0 and VM.Player2Lives != 0 and CurrentShell != "Empty": # Only runs whilst Player 1 or Player 2 isnt dead, and whilst the shotgun has loaded shells.
+                PlayerTurn(2) # Calls for Player 1's turn.
+            else:
+                if VM.PlayerLives == 0:
+                    GUI("PlayerDied", "Player1") # Report that Player died.
+                if VM.Player2Lives == 0:
+                    GUI("PlayerDied", "Player2") # Report that Dealer died.
+                if CurrentShell == "Empty":
+                    GUI("Shotgun", "Empty") # Report that shotgun chamber is empty.
+                break
+            ###### Player 2's Turn ######
 
         ############## Game Turn Loop ##############
 
