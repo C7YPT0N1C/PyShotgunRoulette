@@ -2,7 +2,6 @@ import random
 
 import Shotgun
 import VariableManager as VM
-import DealerAnalysisOLD
 
 ######################################## DECLARE VARIABLES ########################################
 
@@ -19,30 +18,6 @@ BlankChance = 0 # Chance for a blank shell to be shot.
 def Debug(): # Print variables.
     print("\nLive Chance:", LiveChance, "%.")
     print("Blank Chance:", BlankChance, "%.")
-
-def AnalysisPrint(): # Prints the lists.
-    print("\nPlayer Decisions: ", DealerAnalysisOLD.PlayerDecisions)
-    print("Dealer Decisions: ", DealerAnalysisOLD.DealerDecisions)
-    print("Correct Decisions: ", DealerAnalysisOLD.CorrectDecision)
-
-######################################## DECISION STUFF ########################################
-
-def Track(Target, Decision): # Updates lists as decisions are made and shells are shot.
-    if Target == "Dealer":
-        if Decision == "Live":
-            DealerAnalysisOLD.DealerDecisions.append("L")
-            DealerAnalysisOLD.PlayerDecisions.append("-")
-        if Decision == "Blank":
-            DealerAnalysisOLD.DealerDecisions.append("B")
-            DealerAnalysisOLD.PlayerDecisions.append("-")
-
-    if Target == "System":
-        if Decision == "Live":
-            DealerAnalysisOLD.CorrectDecision.append("L")
-        if Decision == "Blank":
-            DealerAnalysisOLD.CorrectDecision.append("B")
-
-######################################## DECISION STUFF ########################################
 
 ######################################## GAME TURN STUFF ########################################
 
@@ -95,9 +70,6 @@ def DealerChoice(Choice):
             
         if AILevel == 1: # "Normal" AI.
             return "ShootPlayer" # Return decision.
-        if AILevel == 2: # "Hard" AI.
-            Decision = DealerAnalysisOLD.Analyse("Live") # Analyse past turns for the chance of the shell being a Live.
-            return Decision
     
     if Choice == "Blank":
         if VM.Debugging == 2: # Runs if debugging is enabled.
@@ -105,9 +77,6 @@ def DealerChoice(Choice):
             
         if AILevel == 1: # "Normal" AI.
             return "ShootSelf" # Return decision.
-        if AILevel == 2: # "Hard" AI.
-            Decision = DealerAnalysisOLD.Analyse("Live") # Analyse past turns for the chance of the shell being a Blank.
-            return Decision
 
 def DealerTurn():
     global ChancePerShell

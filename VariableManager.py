@@ -9,6 +9,8 @@ AILevel = 1
 
 Debugging = 1
 
+ShotgunShellCount = 8
+
 CurrentTurn = 0
 
 PlayerLives = 3

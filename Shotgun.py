@@ -1,5 +1,7 @@
 import random
 
+import VariableManager as VM
+
 Shotgun = [] # List of loaded shells.
 
 # L = Live, B = Blank, E = Empty
@@ -9,7 +11,7 @@ ShellCount = 0
 LiveShells = 0
 BlankShells = 0
 
-def LoadShotgun(ShellNum, Balanced):
+def LoadShotgun(Balanced):
     # ShellNum = How many shells to load
     # Balanced = Whether loading shells into shotgun is truly random, or balanced (e.g. ensuring that there arent like, 7 lives 1 blank.) 
     global Shotgun
@@ -18,7 +20,7 @@ def LoadShotgun(ShellNum, Balanced):
     global LiveShells
     global BlankShells
 
-    ShellCount = ShellNum
+    ShellCount = VM.ShotgunShellCount
 
     Shotgun = [] # Reset chamber
 
@@ -78,5 +80,5 @@ def CheckNextShell():
 #CurrentShell = CheckCurrentShell()
 #NextShell = CheckNextShell()
 
-#LoadShotgun(8, True)
+#GenerateShotgun(8, True)
 #print("Shotgun = ", Shotgun)

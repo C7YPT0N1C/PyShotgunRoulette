@@ -15,10 +15,8 @@ import TurnManager
 
 def GUI(Element, Modifier):
     if Element == "LiveShell" and Modifier == 0:
-        TurnManager.Track("System", "Live")
         print("\n! It was a Live. !")
     if Element == "BlankShell" and Modifier == 0:
-        TurnManager.Track("System", "Blank")
         print("\n! It was a Blank. !")
 
     if Element == "PlayerDied" and Modifier == "Player1":
@@ -259,10 +257,12 @@ def GameRounds(GameRound, Lives, ShellCount, ShotgunBalance):
     VM.Player2Lives = Lives
     VM.DealerLives = Lives
 
+    VM.ShotgunShellCount = ShellCount
+
     if ShotgunBalance == False:
-        Shotgun.LoadShotgun(ShellCount, False)
+        Shotgun.LoadShotgun(False)
     else:
-        Shotgun.LoadShotgun(ShellCount, True)
+        Shotgun.LoadShotgun(True)
     
 
     ############## Game Turn Loop ##############
@@ -352,13 +352,10 @@ def Main():
         print("\n! Selecting Player vs Dealer AI Game Mode. !")
         VM.GameMode = 1
 
-        ChooseAILevel = input("\nChoose The Dealer's AI difficulty (1 = Normal, 2 = Hard (Work In Progress), 3 = CHEATER): ") # Choose the difficulty of the Dealer's AI.
+        ChooseAILevel = input("\nChoose The Dealer's AI difficulty (1 = Normal, 2 =  CHEATER): ") # Choose the difficulty of the Dealer's AI.
         if ChooseAILevel == "2":
-            print("\n! Starting game with 'Hard' Dealer AI diffiiculty. !")
-            VM.AILevel = 2
-        elif ChooseAILevel == "3":
             print("\n! Starting game with 'CHEATER' Dealer AI diffiiculty. !")
-            VM.AILevel = 3
+            VM.AILevel = 2
         else:
             print("\n! Starting game with 'Normal' Dealer AI diffiiculty. !")
             VM.AILevel = 1
