@@ -154,39 +154,36 @@ def PlayerTurn(Player):
         
         PrintLives()
 
-        Outcome = TurnManager.Turn(VM.GameMode, CurrentTurn, VM.AILevel)
-        #print("Outcome is: ", Outcome)
+        TurnOutcome = TurnManager.PlayerTurn(VM.GameMode, CurrentTurn)
+        #print("Turn Outcome is: ", TurnOutcome)
 
         if VM.GameMode == 2: # Player 1 VS Player 2.
-            if Outcome == "ShootPlayer1":
+            if TurnOutcome == "ShootPlayer1":
                 print("\n- Player 1 shoots themself. -")
                 ShotTaken("Self")
-            
-            elif Outcome == "ShootPlayer2":
+            elif TurnOutcome == "ShootPlayer2":
                 print("\n- Player 1 shoots Player 2. -")
                 ShotTaken("Enemy")
-            
+            elif TurnOutcome == "ChoiceFailed":
+                PlayerTurn(1)
             else:
                 print("\n! Error. Defaulting to shooting Player 2. !")
                 print("\n- Player 1 shoots Player 2. -")
                 ShotTaken("Enemy")
         
         else: # Player VS AI.
-            if Outcome == "ShootPlayer1":
+            if TurnOutcome == "ShootPlayer1":
                 print("\n- You shoot yourself. -")
                 ShotTaken("Self")
-            
-            elif Outcome == "ShootDealer":
+            elif TurnOutcome == "ShootDealer":
                 print("\n- You shoot The Dealer. -")
                 ShotTaken("Enemy")
-            
+            elif TurnOutcome == "ChoiceFailed":
+                PlayerTurn(1)
             else:
                 print("\n! Error. Defaulting to shooting The Dealer. !")
                 print("\n- You shoot The Dealer. -")
                 ShotTaken("Enemy")
-                
-        if Outcome == "ChoiceFailed":
-            PlayerTurn(1)
             
     if Player == 2: # Player 2's Turn.
         CurrentTurn = "Player2"
@@ -194,19 +191,20 @@ def PlayerTurn(Player):
         GUI("Shotgun", "Report")
             
         print("\n### Player 2's Turn:")
+        
         PrintLives()
 
-        Outcome = TurnManager.Turn(VM.GameMode, CurrentTurn, VM.AILevel)
-        #print("Outcome is: ", Outcome)
+        TurnOutcome = TurnManager.PlayerTurn(VM.GameMode, CurrentTurn)
+        #print("Turn Outcome is: ", TurnOutcome)
 
-        if Outcome == "ShootPlayer2":
+        if TurnOutcome == "ShootPlayer2":
             print("\n- Player 2 shoots themself. -")
             ShotTaken("Self")
-        elif Outcome == "ShootPlayer1":
+        elif TurnOutcome == "ShootPlayer1":
             print("\n- Player 2 shoots Player 1. -")
             ShotTaken("Enemy")
-        elif Outcome == "ChoiceFailed":
-            PlayerTurn(1)
+        elif TurnOutcome == "ChoiceFailed":
+            PlayerTurn(2)
         else:
             print("\n! Error. Defaulting to shooting Player 1. !")
             print("\n- Player 2 shoots Player 1. -")
@@ -217,19 +215,20 @@ def DealersTurn():
 
     CurrentTurn = "Dealer"
 
-    ("Shotgun", "Report")
+    GUI("Shotgun", "Report")
 
     print("\n### Dealer's Turn:")
+    
     PrintLives()
 
-    Outcome = TurnManager.Turn(VM.GameMode, CurrentTurn, VM.AILevel)
-    #print("Outcome is: ", Outcome)
+    TurnOutcome = TurnManager.DealerTurn()
+    print("Turn Outcome is: ", TurnOutcome)
     
-    if Outcome == "ShootSelf":
+    if TurnOutcome == "ShootSelf":
         print("\n- The Dealer shoots itself. -")
         ShotTaken("Self")
         
-    if Outcome == "ShootPlayer":
+    if TurnOutcome == "ShootPlayer":
         print("\n- The Dealer shoots you. -")
         ShotTaken("Enemy")
 
