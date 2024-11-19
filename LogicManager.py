@@ -6,7 +6,7 @@ import DealerAI as DAI
 
 GameMode = 1
 
-#MaxGameRounds = 3
+MaxGameRounds = 3
 GameRound = 1
 
 AILevel = 1
@@ -15,6 +15,11 @@ CurrentTurn = 0
 
 PlayerLives = 3
 DealerLives = 3
+
+GameDebug = 0
+
+DealerDecisionDebug = 0
+DealerAnalysisDebug = 0
 
 #Test = 1
 
@@ -31,10 +36,8 @@ DealerLives = 3
 
 def GUI(Element, Modifier):
     if Element == "LiveShell" and Modifier == 0:
-        DAI.Track("System", "Live")
         print("! It was a Live. !")
     if Element == "BlankShell" and Modifier == 0:
-        DAI.Track("System", "Blank")
         print("! It was a Blank. !")
 
     if Element == "PlayerDied" and Modifier == "Player":
@@ -49,9 +52,11 @@ def GUI(Element, Modifier):
             print("Next Shell Is:", CheckNextShell()) 
 
         if Modifier == "Report": 
-            GUI("Shotgun", "Debug") # Basically cheats.
+            if GameDebug == 1:
+                GUI("Shotgun", "Debug") #################################################################################### Basically cheats.
             
-            print("\n! There are ", Shotgun.LiveShells, "Live Shells left. !")
+            print("\n! --------------------------------------------------------- !")
+            print("! There are ", Shotgun.LiveShells, "Live Shells left. !")
             print("! There are ", Shotgun.BlankShells, "Blank Shells left. !")
         
         if Modifier == "Empty":
@@ -94,11 +99,11 @@ def ShotTaken(Target):
     if Target == "Self":
         if CurrentShell == "Live":
             if CurrentTurn == "Player":
-                print("! PLAYER LOST A LIFE. !")
+                print("\n! PLAYER LOST A LIFE. !")
                 PlayerLives = PlayerLives - 1
                 
             if CurrentTurn == "Dealer":
-                print("! DEALER LOST A LIFE. !")
+                print("\n! DEALER LOST A LIFE. !")
                 DealerLives = DealerLives - 1
 
     if Target == "Enemy":
@@ -133,7 +138,10 @@ def ShotTaken(Target):
             #else:
             #    GUI("Shotgun", "Empty")
 
-######################################## PLAYER TURNS ########################################
+######################################## PLAYER TURNS #########################################
+
+# TODO: Recode to let the player who shot the last bullet in the event that it is a Blank to go first in the next round.
+# TODO: ADD ITEMS
 
 def PrintLives():
     print("! You have", PlayerLives, "lives remaining. !")
@@ -164,6 +172,8 @@ def PlayersTurn():
         print("\n- You shoot the Dealer. -")
         ShotTaken("Enemy")
 
+    Shotgun.PredictedChamber.pop(0) # Update Dealer AI's Shotgun Prediction Algorithm
+
 def DealersTurn():
     global CurrentTurn
 
@@ -183,3 +193,5 @@ def DealersTurn():
     if Outcome == "ShootPlayer":
         print("\n- The Dealer shoots you. -")
         ShotTaken("Enemy")
+
+    Shotgun.PredictedChamber.pop(0) # Update Dealer AI's Shotgun Prediction Algorithm

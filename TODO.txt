@@ -1,2 +1,0 @@
-- Finish commenting
-- Add 2 player (use AI analysis as player move suggestions?)
