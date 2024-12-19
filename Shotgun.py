@@ -1,5 +1,7 @@
 import random
 
+ShotgunDebug = 0 # Enable Debugging.
+
 # L = Live, B = Blank, E = Empty
 ShellTypes = ["L", "B"] # Ensures only Live ("L") or Blank ("B") shells can be loaded into the shotgun.
 Shotgun = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
@@ -10,9 +12,14 @@ BlankShells = 0
 
 ################################################################################
 
+######## HOW CHAMBER PREDICTION WORKS ########
+# TODO
+
 PredictedChamber = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
 
 def PredictShotgun(ShellCount, Balanced):
+    # TODO: Comment.
+    # TODO: Edit so that it takes into account how many live and blank shells are remaining.
     global PredictedChamber
 
     ShellCount = ShellCount
@@ -20,15 +27,21 @@ def PredictShotgun(ShellCount, Balanced):
     PredictedChamber = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"] # Reset chamber
 
     GeneratedChamber1 = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"] # Reset chamber
-    GeneratedChamber2 = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"] # Reset chamber
-    GeneratedChamber3 = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"] # Reset chamber
-    GeneratedChamber4 = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"] # Reset chamber
-    GeneratedChamber5 = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"] # Reset chamber
+    GeneratedChamber2 = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
+    GeneratedChamber3 = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
+    GeneratedChamber4 = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
+    GeneratedChamber5 = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
+    GeneratedChamber6 = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
+    GeneratedChamber7 = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
 
-    for Generation in range (1, 6):
+    if ShotgunDebug == 1:
+        print("\n! GENERATING SHOTGUN CHAMBER PREDICTION !")
+    
+    for Generation in range (1, 8):
         GeneratingChamber = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"] # Reset chamber
 
-        #print("\nGeneration = ", Generation)
+        if ShotgunDebug == 1:
+            print("\nGENERATION", Generation)
             
         if Balanced == False: # Random loading of shotgun.
             for Shell in range(ShellCount):
@@ -41,7 +54,6 @@ def PredictShotgun(ShellCount, Balanced):
                 while GeneratingChamber.count("L") != GeneratingChamber.count("B"): # Loops exits when number of Ls and Bs are equal.
                     for Shell in range(ShellCount):
                         GeneratingChamber[Shell] = ShellTypes[random.randint(0, len(ShellTypes) - 1)]
-                    #print(Shotgun)
         
             else: # If ShellCount is odd.
                 RandomChoice = random.randint(1, 2)
@@ -54,25 +66,48 @@ def PredictShotgun(ShellCount, Balanced):
 
                 while GeneratingChamber.count(LiveOrBlank) != ((ShellCount // 2) + 1):
                     # Loops exits when number the number of Ls is 1 more than the number of Bs
-                    #(and vice versa, depending on which letter is chosen).
+                    # (and vice versa, depending on which letter is chosen).
                     for Shell in range(ShellCount):
                         GeneratingChamber[Shell] = ShellTypes[random.randint(0, len(ShellTypes) - 1)]
+                        
+            #if ShotgunDebug == 1:
+                #print("------------Shotgun = ", Shotgun)
+
+        ########################################
+        
+        if ShotgunDebug == 1:
+            print("------------Shotgun = ", Shotgun)
 
         if Generation == 1:
             GeneratedChamber1 = GeneratingChamber
-            #print("Generated Chamber 1 = ", GeneratedChamber1)
+            if ShotgunDebug == 1:
+                print("Generated Chamber 1 = ", GeneratedChamber1)
         if Generation == 2:
             GeneratedChamber2 = GeneratingChamber
-            #print("Generated Chamber 2 = ", GeneratedChamber2)
+            if ShotgunDebug == 1:
+                print("Generated Chamber 2 = ", GeneratedChamber2)
         if Generation == 3:
             GeneratedChamber3 = GeneratingChamber
-            #print("Generated Chamber 3 = ", GeneratedChamber3)
+            if ShotgunDebug == 1:
+                print("Generated Chamber 3 = ", GeneratedChamber3)
         if Generation == 4:
             GeneratedChamber4 = GeneratingChamber
-            #print("Generated Chamber 4 = ", GeneratedChamber4)
+            if ShotgunDebug == 1:
+                print("Generated Chamber 4 = ", GeneratedChamber4)
         if Generation == 5:
             GeneratedChamber5 = GeneratingChamber
-            #print("Generated Chamber 5 = ", GeneratedChamber5)
+            if ShotgunDebug == 1:
+                print("Generated Chamber 5 = ", GeneratedChamber5)
+        if Generation == 6:
+            GeneratedChamber6 = GeneratingChamber
+            if ShotgunDebug == 1:
+                print("Generated Chamber 6 = ", GeneratedChamber6)
+        if Generation == 7:
+            GeneratedChamber7 = GeneratingChamber
+            if ShotgunDebug == 1:
+                print("Generated Chamber 7 = ", GeneratedChamber7)
+
+    ########################################
 
     for Shell in range (0, ShellCount):
         BlankCount = 0
@@ -87,8 +122,10 @@ def PredictShotgun(ShellCount, Balanced):
             BlankCount = BlankCount + 1
         if GeneratedChamber5[Shell] == "B":
             BlankCount = BlankCount + 1
-
-        #print("\nBlankCount = ", BlankCount)
+        if GeneratedChamber6[Shell] == "B":
+            BlankCount = BlankCount + 1
+        if GeneratedChamber7[Shell] == "B":
+            BlankCount = BlankCount + 1
         
         LiveCount = 0
         
@@ -102,8 +139,10 @@ def PredictShotgun(ShellCount, Balanced):
             LiveCount = LiveCount + 1
         if GeneratedChamber5[Shell] == "L":
             LiveCount = LiveCount + 1
-
-        #print("LiveCount = ", LiveCount)
+        if GeneratedChamber6[Shell] == "L":
+            LiveCount = LiveCount + 1
+        if GeneratedChamber7[Shell] == "L":
+            LiveCount = LiveCount + 1
         
         if BlankCount > LiveCount:
             PredictedChamber[Shell] = "B"
@@ -111,7 +150,15 @@ def PredictShotgun(ShellCount, Balanced):
         if LiveCount > BlankCount:
             PredictedChamber[Shell] = "L"
 
+    if ShotgunDebug == 1:
+        print("\n\n----------Shotgun = ", Shotgun)
+        print("Predicted Chamber = ", PredictedChamber)
+        print("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+
 ################################################################################
+
+######## HOW THE SHOTGUN WORKS ########
+# TODO
 
 def LoadShotgun(ShellNo, Balanced):
     # Shells = How many shells to load
@@ -123,6 +170,11 @@ def LoadShotgun(ShellNo, Balanced):
     global LiveShells
     global BlankShells
 
+    if ShotgunDebug == 1:
+        print("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        print("\n! SHOTGUN DEBUGGING: !")
+        #print("\n")
+
     ShellCount = ShellNo
 
     Shotgun = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"] # Reset chamber
@@ -130,6 +182,9 @@ def LoadShotgun(ShellNo, Balanced):
     if Balanced == False: # Random loading of shotgun.
         for Shell in range(ShellCount):
             Shotgun[Shell] = ShellTypes[random.randint(0, len(ShellTypes) - 1)]
+            
+            if ShotgunDebug == 1:
+                print("Shotgun = ", Shotgun)
     
     if Balanced == True: # Balanced loading of shotgun.
         if ShellCount % 2 == 0: # If ShellCount is even.
@@ -138,7 +193,9 @@ def LoadShotgun(ShellNo, Balanced):
             while Shotgun.count("L") != Shotgun.count("B"): # Loops exits when number of Ls and Bs are equal.
                 for Shell in range(ShellCount):
                     Shotgun[Shell] = ShellTypes[random.randint(0, len(ShellTypes) - 1)]
-                #print(Shotgun)
+
+                    if ShotgunDebug == 1:
+                        print("Shotgun = ", Shotgun)
         
         else: # If ShellCount is odd.
             RandomChoice = random.randint(1, 2)
@@ -151,9 +208,12 @@ def LoadShotgun(ShellNo, Balanced):
 
             while Shotgun.count(LiveOrBlank) != ((ShellCount // 2) + 1):
                 # Loops exits when number the number of Ls is 1 more than the number of Bs
-                #(and vice versa, depending on which letter is chosen).
+                # (and vice versa, depending on which letter is chosen).
                 for Shell in range(ShellCount):
                     Shotgun[Shell] = ShellTypes[random.randint(0, len(ShellTypes) - 1)]
+
+                    if ShotgunDebug == 1:
+                        print("Shotgun = ", Shotgun)
 
     
     LiveShells = Shotgun.count("L")
@@ -161,9 +221,30 @@ def LoadShotgun(ShellNo, Balanced):
     
     PredictShotgun(ShellCount, True)
 
+################################################################################
+
+def ShotgunRandomnessTest(ShellNo, Balanced): # Check how likely a certain order of shells is to be generated.
+    TestShotgun = ["L", "L", "L", "L", "L", "L", "L", "L", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
+    Count = 0
+    
+    while Shotgun != TestShotgun:
+        LoadShotgun(ShellNo, Balanced)
+        print("\nCount", Count + 1, ": Shotgun = ", Shotgun)
+        if Shotgun != TestShotgun:
+            Count = Count + 1
+            Chance = 100/Count #####
+            print("Chances: 1 /", Count, "(", Chance, "%)") #####
+    
+    Count = Count + 1
+    Chance = 100/Count
+
+    print("Chances: 1 /", Count, "(", Chance, "%)")
+    print("\nCalculated Chances: 1 /", Count, "(", Chance, "%)")
+
 def LoadShotgunTest(ShellNo, Balanced):
     LoadShotgun(ShellNo, Balanced)
     print("Shotgun = ", Shotgun)
     print("LiveShells =", LiveShells)
 
+#ShotgunRandomnessTest(8, True)
 #LoadShotgunTest(8, True)

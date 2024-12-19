@@ -1,3 +1,5 @@
+import time
+
 import Shotgun
 import PlayerUI
 import DealerAI as DAI
@@ -15,6 +17,8 @@ CurrentTurn = 0
 
 PlayerLives = 3
 DealerLives = 3
+
+WaitTime = 2
 
 GameDebug = 0
 
@@ -47,20 +51,20 @@ def GUI(Element, Modifier):
 
     if Element == "Shotgun":
         if Modifier == "Debug": # Basically cheats.
-            print("\n", Shotgun.Shotgun) 
-            print("Current Shell Is:", CheckCurrentShell())
-            print("Next Shell Is:", CheckNextShell()) 
+            print("\n! Chamber = ", Shotgun.Shotgun, "!")
+            print("! Current Shell Is:", CheckCurrentShell(), "!")
+            print("! Next Shell Is:", CheckNextShell(), "!") 
 
         if Modifier == "Report": 
+            print("\n! --------------------------------------------------------- !")
             if GameDebug == 1:
                 GUI("Shotgun", "Debug") #################################################################################### Basically cheats.
-            
-            print("\n! --------------------------------------------------------- !")
-            print("! There are ", Shotgun.LiveShells, "Live Shells left. !")
-            print("! There are ", Shotgun.BlankShells, "Blank Shells left. !")
+
+            print("\n! There are", Shotgun.LiveShells, "Live Shells left. !")
+            print("! There are", Shotgun.BlankShells, "Blank Shells left. !")
         
         if Modifier == "Empty":
-            print("\n! Chamber Empty, Skipping Turn. !")
+            print("\n! Chamber Empty, Skipping Next Turn. !")
 
 ######################################## GAME STUFF ########################################
 
@@ -90,6 +94,28 @@ def ShotTaken(Target):
     Shotgun.ShellCount -= 1
     Shotgun.Shotgun.pop(0)
 
+    if Target == "Self":
+        if CurrentShell == "Blank":
+            GUI("BlankShell", 0)
+            Shotgun.BlankShells -= 1
+
+            #print("ShellCount = ", Shotgun.ShellCount) 
+            if NextShell != "Empty":
+                if CurrentTurn == "Player":
+                    print("\n! Player gets another go. !")
+                    PlayersTurn()
+                    
+                if CurrentTurn == "Dealer":
+                    print("\n! Dealer gets another go. !")
+                    DealersTurn()
+            #else:
+            #    GUI("Shotgun", "Empty")
+    
+    if Target == "Enemy":
+        if CurrentShell == "Blank":
+            GUI("BlankShell", 0)
+            Shotgun.BlankShells -= 1
+    
     if Target == "Self" or Target == "Enemy":
         if CurrentShell == "Live":
             GUI("LiveShell", 0)
@@ -116,28 +142,6 @@ def ShotTaken(Target):
                 print("\n! PLAYER LOST A LIFE. !")
                 PlayerLives = PlayerLives - 1
 
-    if Target == "Enemy":
-        if CurrentShell == "Blank":
-            GUI("BlankShell", 0)
-            Shotgun.BlankShells -= 1
-    
-    if Target == "Self":
-        if CurrentShell == "Blank":
-            GUI("BlankShell", 0)
-            Shotgun.BlankShells -= 1
-
-            #print("ShellCount = ", Shotgun.ShellCount) 
-            if NextShell != "Empty":
-                if CurrentTurn == "Player":
-                    print("\n! Player gets another go. !")
-                    PlayersTurn()
-                    
-                if CurrentTurn == "Dealer":
-                    print("\n! Dealer gets another go. !")
-                    DealersTurn()
-            #else:
-            #    GUI("Shotgun", "Empty")
-
 ######################################## PLAYER TURNS #########################################
 
 # TODO: Recode to let the player who shot the last bullet in the event that it is a Blank to go first in the next round.
@@ -151,13 +155,16 @@ def PlayersTurn():
     global CurrentTurn
 
     CurrentTurn = "Player"
-
+    
+    time.sleep(WaitTime) # Wait WaitTime seconds.
     GUI("Shotgun", "Report")
-    print("\n### Player's Turn:")
+    print("\n### PLAYERS' TURN:")
     PrintLives()
 
+    time.sleep(WaitTime/2) # Wait WaitTime seconds.
     Outcome = PlayerUI.Turn()
-    #print("Outcome is: ", Outcome)
+    if GameDebug == 1:
+        print("\nPlayer Turn Outcome is:", Outcome)
 
     if Outcome == "ShootSelf":
         print("\n- You shoot yourself. -")
@@ -179,12 +186,15 @@ def DealersTurn():
 
     CurrentTurn = "Dealer"
 
+    time.sleep(WaitTime) # Wait WaitTime seconds.
     GUI("Shotgun", "Report")
-    print("\n### Dealer's Turn:")
+    print("\n### DEALER'S TURN:")
     PrintLives()
 
+    time.sleep(WaitTime) # Wait WaitTime seconds.
     Outcome = DAI.Turn(AILevel)
-    #print("Outcome is: ", Outcome)
+    if DealerDecisionDebug == 1:
+        print("\nDealer Turn Outcome is:", Outcome)
     
     if Outcome == "ShootSelf":
         print("\n- The Dealer shoots itself. -")

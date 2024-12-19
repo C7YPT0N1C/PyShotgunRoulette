@@ -1,4 +1,5 @@
 import random
+
 import LogicManager as LM
 import Shotgun
 
@@ -11,27 +12,27 @@ import Shotgun
 ######## HOW THE AI WORKS ########
 # Main.py calls for Dealer's turn.
 # Turn() receieves Main.py's call.
-# If AILevel = 1, Turn() analyses chances and returns its decision.
-# If AILevel = 2, Turn() analyses chances and returns its decision to ReturnDecision() (either "Live" or "Blank").
-# ReturnDecision() receieves Turn()'s call.
-# ReturnDecision() calls Track() to update the list of moves made (see Track() function for details)
-# ReturnDecision() returns Turn()'s call to Analyse().
-# Analyse() recieves ReturnDecision()'s call.
-# Analyse() analyses the past moves kept updated by Track() (see Analyse() function for details).
-# Analyse() returns the results of the analysis to ConfirmAnalysis().
-# ConfirmAnalysis() recieves Analyse()'s call.
-# ConfirmAnalysis() checks the value of Analyse()'s call (the results of the analysis) to ensure that it is within the range laid out by the variables "AnalysisReturnMin" and "AnalysisReturnMax".
-# ConfirmAnalysis() compares the value of Analyse()'s call (the results of the analysis) to see whether it is bigger than or equal to the variable "BlankChance" in the event that Turn() returned "Live", or whether it is bigger than or equal to the variable "LiveChance" in the event that Turn() returned "Blank".
-# If ConfirmAnalysis() comfirms either of these statements are true, ConfirmAnalysis() will return the decision equal to Turn()'s return. Otherwise, return the opposite decision and update Track().
-# ConfirmAnalysis() returns its decision to Main.py.
+
+# If AILevel = 1, Turn() analyses probabilities.
+
+# If AILevel = 2, Turn() analyses probabilities and pushes the decision to AnalyseDecision() (either "Live" or "Blank").
+# AnalyseDecision() receieves Turn()'s call.
+# AnalyseDecision() checks the chamber prediction and saved the value of the first shell (Prior to the game starting, Shotgun.py generates a prediction of what the chamber is, along with the chamber itself).
+# AnalyseDecision() checks the value of the stored shell. If only blanks or only lives remain, The Dealer will decide accordingly. If there is at least 1 of each type of shell, The Dealer makes a decision based on the predicted chamber.
+# AnalyseDecision() returns the analysis to Turn().
+# AnalyseDecision() checks if the chamber prediction was correct after The Dealer takes its turn. If correct, continue to use prediction. If incorrect, generate a new prediction. This is done AFTER The Dealer's turn to prevent it from actually cheating.
+
+# If AILevel = 3, The Dealer can check what the current shell is (it cheats lol).
+
+# Turn() returns The Dealer's turn to Main.py.
 # Main.py updates LogicManager of Dealer's decision.
 # LogicManager updates the game.
 
 ######################################## DECLARE VARIABLES ########################################
 
-ChancePerShell = 0 # Chance for a shell to be shot.
-BlankChance = 0 # Chance for a blank shell to be shot.
-LiveChance = 0 # Chance for a live shell to be shot.
+ChancePerShell = 0 # Chance for a shell to be shot. Kinda arbitrary.
+BlankChance = 0 # Chance for a Blank shell to be shot.
+LiveChance = 0 # Chance for a Live shell to be shot.
 
 ######################################## DEBUG STUFF ########################################
 
@@ -41,8 +42,8 @@ def Debug(): # Print variables.
     global BlankChance
 
     print("\nBlank Shells:", Shotgun.BlankShells, "\nBlankChance:", BlankChance, "%")
-    print("Live Shells:", Shotgun.LiveShells, "\nLiveChance:", LiveChance, "%")
-    print("Chance Per Shell = ", ChancePerShell)
+    print("\nLive Shells:", Shotgun.LiveShells, "\nLiveChance:", LiveChance, "%")
+    print("\nChance Per Shell = ", ChancePerShell)
 
 ######################################## DECISION STUFF ########################################
 
@@ -50,47 +51,50 @@ def AnalyseDecision(Decision):
     global AnalysisReturnMin
     global AnalysisReturnMax
 
-    Prediction = Shotgun.PredictedChamber[0] # Store Value
+    Prediction = Shotgun.PredictedChamber[0] # Store value for comparison.
 
-    if LM.DealerAnalysisDebug == 1:
-        print("\n-------Shotgun = ", Shotgun.Shotgun)
-        print("Dealer Shotgun = ", Shotgun.PredictedChamber)
+    if LM.DealerAnalysisDebug == 1: # Print if DealerAnalysisDebug is enabled.
+        print("\n--Current Shotgun Chamber = ", Shotgun.Shotgun)
+        print("Predicted Shotgun Chamber = ", Shotgun.PredictedChamber)
 
-    if Shotgun.PredictedChamber[0] == Shotgun.Shotgun[0]:
+    if Shotgun.PredictedChamber[0] == Shotgun.Shotgun[0]: # Check if Shotgun Chamber Prediction is correct.
         if LM.DealerAnalysisDebug == 1:
-            print("! GENERATION CORRECT !")
-
-    else:
-        if LM.DealerAnalysisDebug == 1:
-            print("! GENERATION INCORRECT !")
-
-        Shotgun.PredictShotgun(Shotgun.ShellCount, True)
+            if Shotgun.BlankShells != 0 and Shotgun.LiveShells != 0: # Print if there is at least 1 of each type of shell left.
+                print("! GENERATION CORRECT !")
     
-    if Shotgun.LiveShells == 0: # If the remaining shells are blank, shoot self.
+    else: # If Shotgun Chamber Prediction is incorrect.
+        if LM.DealerAnalysisDebug == 1:
+            if Shotgun.BlankShells != 0 and Shotgun.LiveShells != 0: # Print if there is at least 1 of each type of shell left.
+                print("! GENERATION INCORRECT !")
+
+        Shotgun.PredictShotgun(Shotgun.ShellCount, True) # If Shotgun Chamber Prediction is incorrect, regenerate prediction.
+
+    if Shotgun.BlankShells != 0 and Shotgun.LiveShells == 0: # Print if there only Blank Shells left.
+        print("! (Prediction N/A, Only Blank Shells Remain.) !")
+    elif Shotgun.BlankShells == 0 and Shotgun.LiveShells != 0: # Print if there only Live Shells left.
+        print("! (Prediction N/A, Only Live Shells Remain.) !")
+  
+    ########################################
+
+    if Shotgun.BlankShells == 0: # If the remaining shells are live, shoot player.
+        return "ShootPlayer" # Return decision.  
+    elif Shotgun.LiveShells == 0: # If the remaining shells are blank, shoot self.
         return "ShootSelf" # Return decision.
-    
-    elif Shotgun.BlankShells == 0: # If the remaining shells are live, shoot player.
-        return "ShootPlayer" # Return decision.
-    
     else:
         if Decision == "Blank":
             if Prediction == "B":
-                if LM.DealerAnalysisDebug == 1:
-                    print("\n(After analysing, The Dealer thinks it is Blank. The Dealer is sure of its decision.)")
+                print("\n(The Dealer thinks it's Blank.) \n(After analysing, The Dealer is sure of its initial decision.)")
                 return "ShootSelf" # Return decision.
             if Prediction == "L":
-                if LM.DealerAnalysisDebug == 1:
-                    print("\n(After analysing, The Dealer thinks it is Blank. The Dealer is unsure of its decision and changes its mind.)")
+                print("\n(The Dealer thinks it's Blank.) \n(After analysing, The Dealer changes its mind.)")
                 return "ShootPlayer" # Return decision.
 
         if Decision == "Live":
             if Prediction == "B":
-                if LM.DealerAnalysisDebug == 1:
-                    print("\n(After analysing, The Dealer thinks it is Live. The Dealer is unsure of its decision and changes its mind.)")
+                print("\n(The Dealer thinks it's Live.) \n(After analysing, The Dealer changes its mind.)")
                 return "ShootSelf" # Return decision.
             if Prediction == "L":
-                if LM.DealerAnalysisDebug == 1:
-                    print("\n(After analysing, The Dealer thinks it is Live. The Dealer is sure of its decision.)")
+                print("\n(The Dealer thinks it's Live.) \n(After analysing, The Dealer is sure of its initial decision.)")
                 return "ShootPlayer" # Return decision.
 
 def Turn(AILevel):
@@ -124,7 +128,7 @@ def Turn(AILevel):
         
         if LiveChance == BlankChance: # If shell equally likely to be a live or a blank, choose randomly.
             RandomChoice = random.randint(0,1)
-            if LM.DealerDecisionDebug == 1:
+            if LM.DealerDecisionDebug == 1: # Print if DealerDecisionDebug is enabled.
                if RandomChoice == 0:
                    print("\nRandom Choice = Blank")
                if RandomChoice == 1:
