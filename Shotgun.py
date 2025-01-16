@@ -1,17 +1,17 @@
-import random
+import LogicManager as LM
 
-import VariableManager as VM
+import random
 
 Shotgun = [] # List of loaded shells.
 
-ShotgunDebug = 0 # Enable Debugging.
+ShotgunDebug = LM.ShotgunDebug # Enable Debugging.
 
 # L = Live, B = Blank, E = Empty
 ShellTypes = ["L", "B"] # Ensures only Live ("L") or Blank ("B") shells can be loaded into the shotgun.
 
 ShellCount = 0
-LiveShells = 0
 BlankShells = 0
+LiveShells = 0
 
 PredictedChamber = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
 
@@ -38,7 +38,7 @@ def PredictShotgun(ShellCount, Balanced):
     GeneratedChamber7 = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
 
     if ShotgunDebug == 1:
-        print("\n! GENERATING SHOTGUN CHAMBER PREDICTION !")
+        print("\n! REGENERATING SHOTGUN CHAMBER PREDICTION !")
     
     for Generation in range (1, 8):
         GeneratingChamber = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"] # Reset chamber
@@ -189,7 +189,7 @@ def LoadShotgun(ShellNo, Balanced):
     global LiveShells
     global BlankShells
 
-    ShellCount = VM.ShotgunShellCount
+    #ShellCount = ShellCount
 
     Shotgun = [] # Reset chamber
 
@@ -214,8 +214,16 @@ def LoadShotgun(ShellNo, Balanced):
                 print("Shotgun = ", Shotgun)
     
     if Balanced == True: # Balanced loading of shotgun.
+        LiveOrBlank = ""
+        RandomChoice = random.randint(1, 2)
+
+        if RandomChoice == 1:
+            LiveOrBlank = "L" # 1 = Have more Lives
+        else:
+            LiveOrBlank = "B" # 2 = Have more Blanks
+        
         if ShellCount % 2 == 0: # If ShellCount is even.
-            Shotgun[0] = "L" # Allows while loop to engage (when shotgun is empty, number of Ls and Bs are technically equal.)
+            Shotgun[0] = LiveOrBlank # Allows while loop to engage (when shotgun is empty, number of Ls and Bs are technically equal.)
             
             while Shotgun.count("L") != Shotgun.count("B"): # Loop exits when number of Ls and Bs are equal.
                 for Shell in range(ShellCount):
@@ -225,14 +233,6 @@ def LoadShotgun(ShellNo, Balanced):
                         print("Shotgun = ", Shotgun)
         
         else: # If ShellCount is odd.
-            LiveOrBlank = ""
-            RandomChoice = random.randint(1, 2)
-            
-            if RandomChoice == 1:
-                LiveOrBlank = "L" # 1 = Have more Lives
-            else:
-                LiveOrBlank = "B" # 2 = Have more Blanks
-
             #while Shotgun.count(LiveOrBlank) != ((ShellCount // 2) + random.randint(1, 2)):
             while Shotgun.count(LiveOrBlank) != ((ShellCount // 2) + 1):
                 # Loops exits when number the number of the value of "LiveOrBlank" (Ls or Bs) is 1 more than the number of the other value of "LiveOrBlank"
@@ -259,8 +259,8 @@ def ShotgunRandomnessTest(ShellNo, Balanced): # Check how likely a certain order
         print("\nCount", Count + 1, ": Shotgun = ", Shotgun)
         if Shotgun != TestShotgun:
             Count = Count + 1
-            Chance = 100/Count #####
-            print("Chances: 1 /", Count, "(", Chance, "%)") #####
+            Chance = 100/Count
+            print("Chances: 1 /", Count, "(", Chance, "%)")
     
     Count = Count + 1
     Chance = 100/Count
@@ -271,4 +271,8 @@ def ShotgunRandomnessTest(ShellNo, Balanced): # Check how likely a certain order
 def LoadShotgunTest(ShellNo, Balanced):
     LoadShotgun(ShellNo, Balanced)
     print("Shotgun = ", Shotgun)
-    print("LiveShells =", LiveShells)
+    print("Live Shells =", LiveShells)
+    print("Blank Shells =", BlankShells)
+
+#ShotgunRandomnessTest(8, True)
+#LoadShotgunTest(8, True)

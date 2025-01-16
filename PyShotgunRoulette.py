@@ -1,16 +1,39 @@
-import Main
+import Main as Main
 import LogicManager as LM
-import Shotgun
+import Shotgun as Shotgun
 import PlayerUI as PUI
 import DealerAI as DAI
 
 ######################################## TESTING STUFF ########################################
 
-Shotgun.ShotgunRandomnessTest(8, True)
-#Shotgun.LoadShotgunTest(8, True)
+def DebugMain():
+    print("\n! Selecting Player vs Dealer AI Game Mode. !")
+    LM.GameMode = 1
 
-#Main.DebugMain()
+    print("\n! Starting game with 'Normal' Dealer AI diffiiculty. !")
+    LM.AILevel = 2
+    
+    print("\n! Activating Debugging. !")
+        
+    print("\n! Toggling Game Debugging. !")
+    LM.GameDebug = 0
+    
+    print("\n! Toggling Dealer Decision Debugging. !")
+    LM.DealerDecisionDebug = 0
+    
+    print("\n! Toggling Dealer Analysis Debugging. !")
+    LM.DealerAnalysisDebug = 0
+    
+    print("\n! Toggling Shotgun Debugging. !")
+    LM.ShotgunDebug = 0
+    
+    print("\n! Toggling shotgun Balancing. !")
+    Main.StartGame(True)
+
+#Shotgun.ShotgunRandomnessTest(8, True)
+#Shotgun.LoadShotgunTest(8, True)
 
 ######################################## TESTING STUFF ########################################
 
+DebugMain()
 #Main.Main()

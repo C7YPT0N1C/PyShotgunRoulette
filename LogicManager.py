@@ -1,13 +1,17 @@
-import time
-
-import Shotgun
-import PlayerUI
+import Shotgun as Shotgun
+import Timer as Timer
+import PlayerUI as PlayerUI
 import DealerAI as DAI
 
+import time as time
+
 ######################################## DECLARE VARIABLES ########################################
+GameDebug = 0
+DealerDecisionDebug = 0
+DealerAnalysisDebug = 0
+ShotgunDebug = 0
 
 GameMode = 1
-
 MaxGameRounds = 3
 GameRound = 1
 
@@ -16,14 +20,13 @@ AILevel = 1
 StartingTurn = 0
 CurrentTurn = 0
 
-WaitTime = 1.5 # Make code wait WaitTime seconds. Makes output more readable while playing.
-def Wait():
-    time.sleep(WaitTime) # Wait WaitTime seconds. Makes output more readable while playing.
+#WaitTime = 1.5 # Make code wait WaitTime seconds. Makes output more readable while playing.
+#def Wait():
+    #time.sleep(WaitTime) # Wait WaitTime seconds. Makes output more readable while playing.
 
 PlayerLives = 3
+Player2Lives = 3
 DealerLives = 3
-
-GameDebug = 0
 
 #Test = 1
 
@@ -40,31 +43,44 @@ GameDebug = 0
 
 def GUI(Element, Modifier):
     if Element == "LiveShell" and Modifier == 0:
-        print("! It was a Live. !")
+        print("\n! It was a Live. !")
     if Element == "BlankShell" and Modifier == 0:
-        print("! It was a Blank. !")
+        print("\n! It was a Blank. !")
 
-    if Element == "PlayerDied" and Modifier == "Player":
-        print("\n! PLAYER HAS DIED. !")
+    if Element == "PlayerDied" and Modifier == "Player1":
+        print("\n! PLAYER 1 HAS DIED. !")
+    if Element == "PlayerDied" and Modifier == "Player2":
+        print("\n! PLAYER 2 HAS DIED. !")   
     if Element == "PlayerDied" and Modifier == "Dealer":
-        print("\n! DEALER HAS DIED. !")
+        print("\n! THE DEALER HAS DIED. !")
 
     if Element == "Shotgun":
         if Modifier == "Debug": # Basically cheats.
-            print("\n! Chamber =", Shotgun.Shotgun, "!")
-            print("! Current Shell Is:", Shotgun.CheckCurrentShell(), ". !")
-            print("! Next Shell Is:", Shotgun.CheckNextShell(), ". !") 
+            print("\n", Shotgun.Shotgun) 
+            
+            print("Current Shell Is:", Shotgun.CheckCurrentShell())
+            print("Next Shell Is:", Shotgun.CheckNextShell())
+
+        if Modifier == "Loaded": ############################################################################################################
+            print("\n! Loaded", Shotgun.BlankShells, "Blank Shells into the Shotgun's Chamber. !")
+            print("! Loaded", Shotgun.LiveShells, "Live Shells into the Shotgun's Chamber. !")
 
         if Modifier == "Report": 
-            print("\n! --------------------------------------------------------- !")
-            if GameDebug == 1:
-                GUI("Shotgun", "Debug") #################################################################################### Basically cheats.
-
-            print("\n! There are", Shotgun.LiveShells, "Live Shells left. !")
-            print("! There are", Shotgun.BlankShells, "Blank Shells left. !")
+            if GameDebug == 2: # Runs if debugging is enabled.
+                GUI("Shotgun", "Debug") # Basically cheats.
+            
+            print("\n! ", Shotgun.BlankShells, "Blank Shells left. !")
+            print("! ", Shotgun.LiveShells, "Live Shells left. !")
         
         if Modifier == "Empty":
-            print("\n! Chamber Empty, Skipping Next Turn. !")
+            if PlayerLives == 0:
+                GUI("PlayerDied", "Player1") # Report that Player 1 died.
+            if Player2Lives == 0:
+                GUI("PlayerDied", "Player2") # Report that Player 2 died.
+            if DealerLives == 0:
+                GUI("PlayerDied", "Dealer") # Report that the Dealer died.
+                
+            print("\n! Shotgun Chamber Empty, Skipping Turn. !")
 
 ######################################## GAME STUFF ########################################
 
@@ -144,26 +160,32 @@ def ShotTaken(Target):
 # TODO: ADD ITEMS
 
 def PrintLives():
-    print("! You have", PlayerLives, "lives remaining. !")
-    print("! The Dealer has", DealerLives, "lives remaining. !")
+    if GameMode == 2: # Player 1 VS Player 2.
+        print("! Player 1 has", PlayerLives, "lives remaining. !")
+        print("! Player 2 has", Player2Lives, "lives remaining. !")
+            
+    else: # Player 1 VS Dealer.
+        print("! You have", PlayerLives, "lives remaining. !")
+        print("! The Dealer has", DealerLives, "lives remaining. !")
 
 def PlayersTurn():
     global CurrentTurn
 
     CurrentTurn = "Player"
     
-    #print("\n######DEBUGGING###### ! StartingTurn =", StartingTurn, " !")
-    #print("\n######DEBUGGING###### ! CurrentTurn =", CurrentTurn, " !")
+    #print("\n###DEBUGGING### ! StartingTurn =", StartingTurn, " !")
+    #print("\n###DEBUGGING### ! CurrentTurn =", CurrentTurn, " !")
     
-    Wait()
-    GUI("Shotgun", "Report")
+    Timer.GameWait("Full") # See function.
+    if GameDebug == 1:
+        GUI("Shotgun", "Report")
     print("\n### PLAYERS' TURN:")
     PrintLives()
 
-    time.sleep(WaitTime/2) # Wait WaitTime seconds. Makes output more readable while playing.
+    Timer.GameWait("Short") # See function.
     Outcome = PlayerUI.Turn()
     if GameDebug == 1:
-        print("\n######DEBUGGING###### Player Turn Outcome:", Outcome)
+        print("\n###DEBUGGING### Player Turn Outcome:", Outcome)
 
     if Outcome == "ShootSelf":
         print("\n- You shoot yourself. -")
@@ -185,26 +207,22 @@ def DealersTurn():
 
     CurrentTurn = "Dealer"
     
-    #print("\n######DEBUGGING###### ! StartingTurn =", StartingTurn, " !")
-    #print("\n######DEBUGGING###### ! CurrentTurn =", CurrentTurn, " !")
+    #print("\n###DEBUGGING### ! StartingTurn =", StartingTurn, " !")
+    #print("\n###DEBUGGING### ! CurrentTurn =", CurrentTurn, " !")
 
-    Wait()
-    GUI("Shotgun", "Report")
-    
-    Wait()
+    Timer.GameWait("Full") # See function.
+    if GameDebug == 1:
+        GUI("Shotgun", "Report")
     print("\n### DEALER'S TURN:")
     PrintLives()
 
-    Wait()
-    print("\n(The Dealer is thinking...)")
-
+    Timer.GameWait("Short") # See function.
+    Timer.WaitTime("Start") # See function.
     Outcome = DAI.Turn(AILevel)
 
-    DealerWaitTime = DAI.WaitTime("End")
-    time.sleep(DealerWaitTime) # Wait DealerWaitTime seconds. Makes output more readable while playing and makes it look like the Dealer is "thinking".
-
-    if DAI.DealerDecisionDebug == 1:
-        print("\n######DEBUGGING###### Dealer Turn Outcome:", Outcome)
+    #Timer.GameWait("Full") # See function.
+    if DealerDecisionDebug == 1:
+        print("\n###DEBUGGING### Dealer Turn Outcome:", Outcome)
     
     if Outcome == "ShootSelf":
         print("\n- The Dealer shoots itself. -")

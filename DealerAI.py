@@ -1,12 +1,9 @@
-import glob
-import random
-
 import LogicManager as LM
-import Shotgun
+import Shotgun as Shotgun
+import Timer as Timer
 
-import time
-#WaitTime = 2
-
+import time as time
+import random as random
 
 ######################################## NOTES ########################################
 
@@ -39,15 +36,6 @@ ChancePerShell = 0 # Chance for a shell to be shot. Kinda arbitrary.
 BlankChance = 0 # Chance for a Blank shell to be shot.
 LiveChance = 0 # Chance for a Live shell to be shot.
 
-DealerDecisionDebug = 0
-DealerAnalysisDebug = 0
-
-WaitTimeDebug = 0
-
-StartTime = 0
-EndTime = 0
-RunTime = 0
-
 ######################################## MISC ########################################
 
 def Debug(): # Print variables.
@@ -59,178 +47,121 @@ def Debug(): # Print variables.
     #print("\nLive Shells:", Shotgun.LiveShells, "\nLiveChance:", LiveChance, "%")
     #print("\nChance Per Shell = ", ChancePerShell)
 
-    print("\n######DEBUGGING###### Blank Shells:", Shotgun.BlankShells, "| Live Shells:", Shotgun.LiveShells)
-    print("######DEBUGGING###### BlankChance:", BlankChance, "% | LiveChance:", LiveChance, "%")
-    print("######DEBUGGING###### Chance Per Shell = ", ChancePerShell)
+    if LM.DealerAnalysisDebug == 1:
+        Timer.WaitTime("Pause") # See function.
 
-    #print("\n######DEBUGGING###### TEXT") # TEMPLATE
+    print("\n###DEBUGGING### Blank Shells:", Shotgun.BlankShells, "| Live Shells:", Shotgun.LiveShells)
+    print("###DEBUGGING### BlankChance:", BlankChance, "% | LiveChance:", LiveChance, "%")
+    print("###DEBUGGING### Chance Per Shell = ", ChancePerShell)
 
-######## HOW WaitTime WORKS ########
-# TODO
+    #print("\n###DEBUGGING### TEXT") # TEMPLATE
 
-def WaitTime(Operation):  # Accept StartTime as a parameter
-    global StartTime
-    global EndTime
+######################################## ANALYSIS STUFF ########################################
 
-    global RunTime
-    
-    if Operation == "Start":
-        RunTime = 0
-        if WaitTimeDebug == 1:
-            print("\n######DEBUGGING###### ! WARNING: TOTAL WAIT TIME RESET. Run Time:", RunTime, "s. !")
-
-        StartTime = 0
-        EndTime = 0
-        
-        if WaitTimeDebug == 1:
-            print("\n######DEBUGGING###### ! WARNING: WAITING STARTED. !")
-        StartTime = time.perf_counter()
-    
-    if Operation == "End":
-        EndTime = time.perf_counter()
-        
-        if WaitTimeDebug == 1:
-            print("\n######DEBUGGING###### ! StartTime =", StartTime, "s. !")
-            print("######DEBUGGING###### ! EndTime =", EndTime, "s. !")
-
-        RunTime = EndTime - StartTime
-        if WaitTimeDebug == 1:
-            print("\n######DEBUGGING###### ! WARNING: WAITING ENDED. Run time:", RunTime, "s. !")
-            print("\n######DEBUGGING###### ! WARNING: RETURNING TOTAL TIME. Run time:", RunTime, "s. !")
-
-        ########################################
-        
-        RunTimeCap = 0.5
-        RunTimeMultiplyer = 5
-
-        if WaitTimeDebug == 1:
-            print("\n######DEBUGGING###### ! RunTimeCap =", RunTimeCap, "!")
-        while RunTime >= 0 and RunTime <= RunTimeCap:
-            RunTime = RunTime * RunTimeMultiplyer
-            if WaitTimeDebug == 1:
-                print("######DEBUGGING###### ! UPDATED Run time:", RunTime, "s. !")
-        
-        ########################################
-
-        if LM.AILevel == 1:
-            if WaitTimeDebug == 1:
-                print("\n######DEBUGGING###### ! Returning Total Time as:", RunTime, "s. !")
-            return RunTime
-        if LM.AILevel == 2:
-            if WaitTimeDebug == 1:
-                print("\n######DEBUGGING###### ! Returning Total Time as:", RunTime, "s. !")
-            return (RunTime)
-        if LM.AILevel == 3:
-            if WaitTimeDebug == 1:
-                print("\n######DEBUGGING###### ! Returning Total Time as:", RunTime, "s. !")
-            return RunTime
-
-######################################## DECISION STUFF ########################################
 PrevPredictionCorrect = 0
 CurrentPredictionCorrect = 0
 
 def AnalyseDecision(Decision):
-    global AnalysisReturnMin
-    global AnalysisReturnMax
-
+    Timer.WaitTime("Wait") # See function.
     Prediction = Shotgun.PredictedChamber[0] # Store value for comparison.
 
-    if DealerAnalysisDebug == 1: # Print if DealerAnalysisDebug is enabled.
-        print("\n######DEBUGGING###### --Current Shotgun Chamber = ", Shotgun.Shotgun)
-        print("######DEBUGGING###### Predicted Shotgun Chamber = ", Shotgun.PredictedChamber)
+    if LM.DealerAnalysisDebug == 1: # Print if DealerAnalysisDebug is enabled.
+        Timer.WaitTime("Pause") # See function.
+        
+        print("\n###DEBUGGING### --Current Shotgun Chamber = ", Shotgun.Shotgun)
+        print("###DEBUGGING### Predicted Shotgun Chamber = ", Shotgun.PredictedChamber)
     
     global PrevPredictionCorrect
     global CurrentPredictionCorrect
+
     if CurrentPredictionCorrect == 1:
         PrevPredictionCorrect = 1
     else:
         PrevPredictionCorrect = 0
     
-    if DealerAnalysisDebug == 1:
-        print("\n######DEBUGGING###### PrevPredictionCorrect =", PrevPredictionCorrect)
-        print("######DEBUGGING###### CurrentPredictionCorrect =", CurrentPredictionCorrect)
+    #if LM.DealerAnalysisDebug == 1:
+        #print("\n###DEBUGGING### PrevPredictionCorrect =", PrevPredictionCorrect)
+        #print("###DEBUGGING### CurrentPredictionCorrect =", CurrentPredictionCorrect)
     
     CurrentPredictionCorrect = 0
 
-    if Shotgun.PredictedChamber[0] == Shotgun.Shotgun[0]: # Check if Shotgun Chamber Prediction is correct.
-        if DealerAnalysisDebug == 1:
-            if Shotgun.BlankShells != 0 and Shotgun.LiveShells != 0: # Print if there is at least 1 of each type of shell left.
+    if LM.DealerAnalysisDebug == 1:
+        if Shotgun.BlankShells != 0 and Shotgun.LiveShells != 0: # Print if there is at least 1 of each type of shell left.
+            if PrevPredictionCorrect == 1:
+                    print("\n###DEBUGGING### ! PREVIOUS GENERATION: CORRECT. !")
+            else:
+                print("\n###DEBUGGING### ! PREVIOUS GENERATION: INCORRECT. !")
+
+            if Shotgun.PredictedChamber[0] == Shotgun.Shotgun[0]: # If Shotgun Chamber Prediction is correct.
                 CurrentPredictionCorrect = 1
-                print("\n######DEBUGGING###### ! CURRENT GENERATION CORRECT !")
-                
-                if DealerAnalysisDebug == 1:
-                    if PrevPredictionCorrect == 1:
-                        print("\n######DEBUGGING###### ! PREVIOUS GENERATION: CORRECT. !")
-    
-    else: # If Shotgun Chamber Prediction is incorrect.
-        if DealerAnalysisDebug == 1:
-            if Shotgun.BlankShells != 0 and Shotgun.LiveShells != 0: # Print if there is at least 1 of each type of shell left.
+                print("###DEBUGGING### ! CURRENT GENERATION CORRECT !")
+
+            else: # If Shotgun Chamber Prediction is incorrect.
                 CurrentPredictionCorrect = 0
-                print("\n######DEBUGGING###### ! CURRENT GENERATION INCORRECT !")
-                
-                if DealerAnalysisDebug == 1:
-                    if PrevPredictionCorrect == 0:
-                        print("\n######DEBUGGING###### ! PREVIOUS GENERATION: INCORRECT. !")
+                print("###DEBUGGING### ! CURRENT GENERATION INCORRECT !")
 
-        Shotgun.PredictShotgun(Shotgun.ShellCount, True) # If Shotgun Chamber Prediction is incorrect, regenerate prediction.
+                Shotgun.PredictShotgun(Shotgun.ShellCount, True) # If Shotgun Chamber Prediction is incorrect, regenerate prediction.
 
-    if Shotgun.BlankShells != 0 and Shotgun.LiveShells == 0: # Print if there only Blank Shells left.
-        if DealerAnalysisDebug == 1:
-            print("\n######DEBUGGING###### ! (Prediction N/A, Only Blank Shells Remain.) !")
-    elif Shotgun.BlankShells == 0 and Shotgun.LiveShells != 0: # Print if there only Live Shells left.
-        if DealerAnalysisDebug == 1:
-            print("\n######DEBUGGING###### ! (Prediction N/A, Only Live Shells Remain.) !")
+            if Shotgun.BlankShells != 0 and Shotgun.LiveShells == 0: # Print if there only Blank Shells left.
+                print("\n###DEBUGGING### ! (Prediction N/A, Only Blank Shells Remain.) !")
+            
+            if Shotgun.BlankShells == 0 and Shotgun.LiveShells != 0: # Print if there only Live Shells left.
+                print("\n###DEBUGGING### ! (Prediction N/A, Only Live Shells Remain.) !")
   
     ########################################
 
     if Shotgun.BlankShells == 0: # If the remaining shells are live, shoot player.
         return "ShootPlayer" # Return decision.  
+    
     elif Shotgun.LiveShells == 0: # If the remaining shells are blank, shoot self.
         return "ShootSelf" # Return decision.
+    
     else:
-        if Prediction == "B":
-            if Decision == "Blank":
+        Timer.WaitTime("ReportToPlayer") # See function.
+        if Decision == "Blank": # If the Decision is a Blank shell.
+            if Prediction == "B": # If the Decision and Prediction agree on it being a Blank shell.
                 print("\n(The Dealer thinks it's Blank.) \n(After analysing, The Dealer is sure of its initial decision.)")
                 return "ShootSelf" # Return decision.
             
-            if Decision == "Live":
-                if PrevPredictionCorrect == 1:
+            if Prediction == "L": # If the Decision and Prediction disagree on it being a Blank shell.
+                if PrevPredictionCorrect == 1: # If the previous Prediction was correct.
                     print("\n(The Dealer thinks it's Live.) \n(After analysing, The Dealer changes its mind.)")
-                    return "ShootSelf"
+                    return "ShootPlayer" # Return decision.
                 else:
                     print("\n(The Dealer thinks it's Live.) \n(After analysing, The Dealer is sure of its initial decision.)")
-                    return "ShootPlayer" # Return decision.
+                    return "ShootSelf" # Return decision.
         
-        if Prediction == "L":
-            if Decision == "Blank":
-                if PrevPredictionCorrect == 1:
+        if Decision == "Live":
+            if Prediction == "B": # If the Decision and Prediction diagree on it being a Blank shell.
+                if PrevPredictionCorrect == 1: # If the previous Prediction was correct.
                     print("\n(The Dealer thinks it's Blank.) \n(After analysing, The Dealer changes its mind.)")
-                    return "ShootPlayer" # Return decision.
-                else:
+                    return "ShootSelf" # Return decision.
+                else:    
                     print("\n(The Dealer thinks it's Blank.) \n(After analysing, The Dealer is sure of its initial decision.)")
-                    return "ShootSelf"
+                    return "ShootPlayer" # Return decision.
             
-            if Decision == "Live":
-                print("\n(The Dealer thinks it's Live.) \n(After analysing, The Dealer is sure of its initial decision.)")
+            if Prediction == "L": # If the Decision and Prediction agree on it being a Blank shell.
+                print("\n(The Dealer thinks it's Live.) \n(After analysing, The Dealer is sure of its initial decision.")
                 return "ShootPlayer" # Return decision.
+
+######################################## DECISION STUFF ########################################
 
 def Turn(AILevel):
     global ChancePerShell
     global BlankChance
     global LiveChance
 
-    WaitTime("Start")
+    print("\n(The Dealer is thinking...)")
 
+    Timer.WaitTime("Wait") # See function.
     ChancePerShell = int(100 / (Shotgun.LiveShells + Shotgun.BlankShells)) # Calculate chance for a shell to be shot.
     BlankChance = (ChancePerShell * Shotgun.BlankShells) # Calculate chance for a blank shell to be shot.
     LiveChance = (ChancePerShell * Shotgun.LiveShells) # Calculate chance for a live shell to be shot.
 
-    if DealerDecisionDebug == 1:
+    if LM.DealerDecisionDebug == 1:
         Debug() # Print debug.
 
-    #Outcome = 0
-
-    if AILevel == 1:
+    if AILevel == 1: # "Easy" Difficulty.
         if BlankChance > LiveChance: # If shell more likely to be a blank, shoot player.
             return "ShootSelf" # Return decision.
         
@@ -239,48 +170,49 @@ def Turn(AILevel):
         
         if LiveChance == BlankChance: # If shell equally likely to be a live or a blank, choose randomly.
             RandomChoice = random.randint(0,1)
-            if DealerDecisionDebug == 1: # Print if DealerDecisionDebug is enabled.
+            if LM.DealerDecisionDebug == 1: # Print if DealerDecisionDebug is enabled.
                if RandomChoice == 0:
-                   print("\n######DEBUGGING###### (Random Choice: Blank.)")
+                   print("\n###DEBUGGING### (Random Choice: Blank.)")
                if RandomChoice == 1:
-                   print("\n######DEBUGGING###### (Random Choice: Live.)")
+                   print("\n###DEBUGGING### (Random Choice: Live.)")
 
             if RandomChoice == 0:
                 return "ShootSelf"
             if RandomChoice == 1:
                 return "ShootPlayer"
     
-    if AILevel == 2:
+    if AILevel == 2: # "Normal" Difficulty.
+
         if BlankChance > LiveChance: # If shell more likely to be a blank, analyse chance of shell being a blank.
-            if DealerDecisionDebug == 1:
-                print("\n######DEBUGGING###### (Initial Choice: Blank.)")
+            if LM.DealerDecisionDebug == 1:
+                print("\n###DEBUGGING### (Initial Choice: Blank.)")
             
             return AnalyseDecision("Blank") # See function.
 
         if LiveChance > BlankChance: # If shell more likely to be a live, analyse chance of shell being a live.
-            if DealerDecisionDebug == 1:
-                print("\n######DEBUGGING###### (Initial Choice: Live.)")
+            if LM.DealerDecisionDebug == 1:
+                print("\n###DEBUGGING### (Initial Choice: Live.)")
             
             return AnalyseDecision("Live") # See function.
         
         if LiveChance == BlankChance: # If shell equally likely to be a live or a blank, analyse chances.
-            if DealerDecisionDebug == 1:
-                print("\n######DEBUGGING###### (Initial Choice: Equal Chance.)")
+            if LM.DealerDecisionDebug == 1:
+                print("\n###DEBUGGING### (Initial Choice: Equal Chance.)")
             
             RandomChoice = random.randint(0,1)
             if RandomChoice == 0: # "A Blank" randomly chosen.
-                if DealerDecisionDebug == 1:
-                    print("\n######DEBUGGING###### (Random Guess: Blank.)")
+                if LM.DealerDecisionDebug == 1:
+                    print("\n###DEBUGGING### (Random Guess: Blank.)")
                 
                 return AnalyseDecision("Blank") # See function.
             
             if RandomChoice == 1: # "A Live" randomly chosen.
-                if DealerDecisionDebug == 1:
-                    print("\n######DEBUGGING###### (Random Guess: Live.)")
+                if LM.DealerDecisionDebug == 1:
+                    print("\n###DEBUGGING### (Random Guess: Live.)")
                 
                 return AnalyseDecision("Live") # See function.    
     
-    if AILevel == 3:
+    if AILevel == 3: # "CHEATER" Difficulty.
         if Shotgun.Shotgun[0] == "B":
             return "ShootSelf"
         if Shotgun.Shotgun[0] == "L":
