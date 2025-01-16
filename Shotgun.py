@@ -13,14 +13,12 @@ ShellCount = 0
 LiveShells = 0
 BlankShells = 0
 
-def LoadShotgun(Balanced):
-    # ShellNum = How many shells to load
+PredictedChamber = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
+
 ################################################################################
 
 ######## HOW CHAMBER PREDICTION WORKS ########
 # TODO
-
-PredictedChamber = ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
 
 def PredictShotgun(ShellCount, Balanced):
     # TODO: Comment.
@@ -231,16 +229,13 @@ def LoadShotgun(ShellNo, Balanced):
             RandomChoice = random.randint(1, 2)
             
             if RandomChoice == 1:
-                LiveOrBlank = "L" # 1 = Have more Lives, 2 = Have more Blanks
+                LiveOrBlank = "L" # 1 = Have more Lives
             else:
-                LiveOrBlank = "B"
+                LiveOrBlank = "B" # 2 = Have more Blanks
 
-            while Shotgun.count(LiveOrBlank) != ((ShellCount // 2) + random.randint(1, 2)):
-                # Loop exits when number the number of Ls is a random amount more than the number of Bs (and vice versa, depending on which letter is chosen).
-                # The random number is between 1 and 2.
+            #while Shotgun.count(LiveOrBlank) != ((ShellCount // 2) + random.randint(1, 2)):
             while Shotgun.count(LiveOrBlank) != ((ShellCount // 2) + 1):
-                # Loops exits when number the number of Ls is 1 more than the number of Bs
-                # (and vice versa, depending on which letter is chosen).
+                # Loops exits when number the number of the value of "LiveOrBlank" (Ls or Bs) is 1 more than the number of the other value of "LiveOrBlank"
                 for Shell in range(ShellCount):
                     Shotgun[Shell] = ShellTypes[random.randint(0, len(ShellTypes) - 1)]
 

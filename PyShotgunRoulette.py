@@ -6,10 +6,10 @@ import DealerAI as DAI
 
 ######################################## TESTING STUFF ########################################
 
-#Shotgun.ShotgunRandomnessTest(8, True)
+Shotgun.ShotgunRandomnessTest(8, True)
 #Shotgun.LoadShotgunTest(8, True)
 
-Main.DebugMain()
+#Main.DebugMain()
 
 ######################################## TESTING STUFF ########################################
 
