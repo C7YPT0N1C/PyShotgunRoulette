@@ -3,6 +3,8 @@ import LogicManager as LM
 import Timer as Timer
 import DealerAI as DAI
 
+Debugging = 0
+
 ######################################## GAME ROUNDS ########################################
 
 def GameRounds(GameRound, Lives, ShellCount, ShotgunBalance):
@@ -28,6 +30,7 @@ def GameRounds(GameRound, Lives, ShellCount, ShotgunBalance):
 
     if GameRound == "End":
         print("\n\n##### GAME OVER #####")
+        Main()
     
     LM.PlayerLives = Lives # Reset Lives
     LM.Player2Lives = Lives
@@ -122,69 +125,89 @@ def StartGame(ShotgunBalance): # Define Game Rounds Here.
 
 ######################################## MAIN RUNTIME ########################################
 
-def Main():
-    ChooseGameMode = input("Choose the Game Mode (1 = Player vs Dealer AI, 2 = Player 1 vs Player 2): ") # Choose game mode.
-    if ChooseGameMode == "2":
-        print("\n! Selecting Player 1 vs Player 2 Game Mode. !")
-        LM.GameMode = 2
-    else:
-        print("\n! Selecting Player vs Dealer AI Game Mode. !")
-        LM.GameMode = 1
+def Options():
+    global Debugging
 
-        ChooseAILevel = input("\nChoose The Dealer's AI difficulty (1 = Easy, 2 = Normal, 3 =  CHEATER): ") # Choose the difficulty of the Dealer's AI.
-        if ChooseAILevel == "2":
-            print("\n! Starting game with 'Normal' Dealer AI diffiiculty. !")
-            LM.AILevel = 2
-        elif ChooseAILevel == "3":
-            print("\n! Starting game with 'CHEATER' Dealer AI diffiiculty. !")
-            LM.AILevel = 3
-        else:
-            print("\n! Starting game with 'Easy' Dealer AI diffiiculty. !")
-            LM.AILevel = 1
-    
-    Debugging = input("\nDo you want to activate Debugging? (1 = No, 2 = Yes): ") # Enable Debugging.
-    if Debugging == "2":
-        print("\n! Activating Debugging. !")
+    print("\nDebugging:", Debugging)
+    Debugging = input("Do you want to activate Debugging? (0 = No, 1 = Yes): ") # Enable Debugging.
+    if Debugging == "1":
+        print("! Activating Debugging. !")
         
-        GameDebug = input("\nDo you want to enable Game Debugging? (1 = No, 2 = Yes): ") # Enable Game Debugging.
+        print("\nGame Debugging:", LM.GameDebug)
+        GameDebug = input("Do you want to enable Game Debugging? (1 = No, 2 = Yes): ") # Enable Game Debugging.
         if GameDebug == "2":
-            print("\n! Enabling Game Debugging. !")
+            print("! Enabling Game Debugging. !")
             LM.GameDebug = 1
         else:
-            print("\n! Disabling Game Debugging. !")
+            print("! Disabling Game Debugging. !")
             LM.GameDebug = 0
         
-        DealerDecisionDebug = input("\nDo you want to enable Dealer Decision Debugging? (1 = No, 2 = Yes): ") # Enable Dealer Decision Debugging.
+        print("\nDealer Decision Debugging:", LM.DealerDecisionDebug)
+        DealerDecisionDebug = input("Do you want to enable Dealer Decision Debugging? (1 = No, 2 = Yes): ") # Enable Dealer Decision Debugging.
         if DealerDecisionDebug == "2":
-            print("\n! Enabling Dealer Decision Debugging. !")
+            print("! Enabling Dealer Decision Debugging. !")
             LM.DealerDecisionDebug = 1
         else:
-            print("\n! Disabling Dealer Decision Debugging. !")
+            print("! Disabling Dealer Decision Debugging. !")
             LM.DealerDecisionDebug = 0
 
-        DealerAnalysisDebug = input("\nDo you want to enable Dealer Analysis Debugging? (1 = No, 2 = Yes): ") # Enable Dealer Analysis Debugging.
+        print("\nDealer Analysis Debugging:", LM.DealerAnalysisDebug)
+        DealerAnalysisDebug = input("Do you want to enable Dealer Analysis Debugging? (1 = No, 2 = Yes): ") # Enable Dealer Analysis Debugging.
         if DealerAnalysisDebug == "2":
-            print("\n! Enabling Dealer Analysis Debugging. !")
+            print("! Enabling Dealer Analysis Debugging. !")
             LM.DealerAnalysisDebug = 1
         else:
-            print("\n! Disabling Dealer Analysis Debugging. !")
+            print("! Disabling Dealer Analysis Debugging. !")
             LM.DealerAnalysisDebug = 0
 
-        ShotgunDebug = input("\nDo you want to enable Shotgun Debugging? (1 = No, 2 = Yes): ") # Enable Shotgun Debugging.
+        print("\nShotgun Debugging:", LM.ShotgunDebug)
+        ShotgunDebug = input("Do you want to enable Shotgun Debugging? (1 = No, 2 = Yes): ") # Enable Shotgun Debugging.
         if ShotgunDebug == "2":
-            print("\n! Enabling Shotgun Debugging. !")
+            print("! Enabling Shotgun Debugging. !")
             LM.ShotgunDebug = 1
         else:
-            print("\n! Disabling Shotgun Debuggingging. !")
+            print("! Disabling Shotgun Debuggingging. !")
             LM.ShotgunDebug = 0
+        
+        print("\n! Returning to Main Menu. !")
 
     else:
-        print("\n! Deactivating Debugging. !")
+        print("! Deactivating Debugging. !")
+    
+    Main()
 
-    ChooseShotgunBalance = input("\nDo you want the Shotgun to be balanced? (1 = No, 2 = Yes): ") # Choose whether  loading the shotgun is balanced or not.
-    if ChooseShotgunBalance == "1":
-        print("\n! Starting game with an unbalanced Shotgun. !")
-        StartGame(False)
+def Main():
+    GameMenu = input("\nMain Menu! (1 = Play Game, 2 = Options): ") # Choose game mode.
+    if GameMenu == "1":
+        print("\n! Starting Game. !")
+        
+        ChooseGameMode = input("\nChoose the Game Mode (1 = Player vs Dealer AI, 2 = Player 1 vs Player 2): ") # Choose game mode.
+        if ChooseGameMode == "2":
+            print("\n! Selecting Player 1 vs Player 2 Game Mode. !")
+            LM.GameMode = 2
+        else:
+            print("\n! Selecting Player vs Dealer AI Game Mode. !")
+            LM.GameMode = 1
+
+            ChooseAILevel = input("\nChoose The Dealer's AI difficulty (1 = Easy, 2 = Normal, 3 =  CHEATER): ") # Choose the difficulty of the Dealer's AI.
+            if ChooseAILevel == "2":
+                print("\n! Starting game with 'Normal' Dealer AI diffiiculty. !")
+                LM.AILevel = 2
+            elif ChooseAILevel == "3":
+                print("\n! Starting game with 'CHEATER' Dealer AI diffiiculty. !")
+                LM.AILevel = 3
+            else:
+                print("\n! Starting game with 'Easy' Dealer AI diffiiculty. !")
+                LM.AILevel = 1
+            
+        ChooseShotgunBalance = input("\nDo you want the Shotgun to be balanced? (1 = No, 2 = Yes): ") # Choose whether  loading the shotgun is balanced or not.
+        if ChooseShotgunBalance == "1":
+            print("\n! Starting game with an unbalanced Shotgun. !")
+            StartGame(False)
+        else:
+            print("\n! Starting game with an balanced Shotgun. !")
+            StartGame(True)
+
     else:
-        print("\n! Starting game with an balanced Shotgun. !")
-        StartGame(True)
+        print("\n! Entering Option Menu. !")
+        Options()

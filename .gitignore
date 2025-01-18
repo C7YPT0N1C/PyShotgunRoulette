@@ -1,3 +1,4 @@
-/__pycache__
-/__pycache__/Items/__pycache__
+/.git
+/.vscode
+*/__pycache__
 *.pyc

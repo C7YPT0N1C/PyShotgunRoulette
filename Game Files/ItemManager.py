@@ -13,5 +13,4 @@ def UseItem(Item):
 
 # Example usage
 UseItem("Handsaw")
-UseItem("Adrenaline")
 UseItem("NonExistent")  # Test error handling

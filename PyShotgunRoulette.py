@@ -1,3 +1,9 @@
+import sys
+import os
+
+GameFiles = os.path.abspath("./Game Files") # Add the "Game Files" folder path to sys.path
+sys.path.append(GameFiles)
+
 import Main as Main
 import LogicManager as LM
 import Shotgun as Shotgun
@@ -35,5 +41,5 @@ def DebugMain():
 
 ######################################## TESTING STUFF ########################################
 
-DebugMain()
-#Main.Main()
+#DebugMain()
+Main.Main()

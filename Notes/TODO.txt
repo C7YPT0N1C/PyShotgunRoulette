@@ -1,5 +1,0 @@
-- Finish commenting
-
-- Fix DealerAI's analysis algorithm.
-
-- Add 2 player (use AI analysis as player move suggestions?)
