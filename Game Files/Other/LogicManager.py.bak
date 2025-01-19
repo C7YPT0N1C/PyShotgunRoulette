@@ -1,5 +1,3 @@
-import Main
-
 import Shotgun as Shotgun
 import Timer as Timer
 import PlayerUI as PlayerUI
@@ -49,13 +47,12 @@ def GUI(Element, Modifier):
     if Element == "BlankShell" and Modifier == 0:
         print("\n! It was a Blank. !")
 
-    if Element == "PlayerDied":
-        if Modifier == "Player1":
-            print("\n! PLAYER 1 HAS DIED. !")
-        if Modifier == "Player2":
-            print("\n! PLAYER 2 HAS DIED. !")   
-        if Modifier == "Dealer":
-            print("\n! THE DEALER HAS DIED. !")
+    if Element == "PlayerDied" and Modifier == "Player1":
+        print("\n! PLAYER 1 HAS DIED. !")
+    if Element == "PlayerDied" and Modifier == "Player2":
+        print("\n! PLAYER 2 HAS DIED. !")   
+    if Element == "PlayerDied" and Modifier == "Dealer":
+        print("\n! THE DEALER HAS DIED. !")
 
     if Element == "Shotgun":
         if Modifier == "Debug": # Basically cheats.
@@ -87,8 +84,6 @@ def GUI(Element, Modifier):
 ######################################## GAME STUFF ########################################
 
 def ShotTaken(Target):
-    global GameRound
-    
     global PlayerLives
     global DealerLives
 
@@ -110,7 +105,7 @@ def ShotTaken(Target):
             if NextShell != "Empty":
                 if CurrentTurn == "Player":
                     print("\n! Player gets another go. !")
-                    Player1Turn()
+                    PlayersTurn()
                     
                 if CurrentTurn == "Dealer":
                     print("\n! Dealer gets another go. !")
@@ -118,14 +113,14 @@ def ShotTaken(Target):
             else:
                 GUI("Shotgun", "Empty") # Report that shotgun chamber is empty.
 
-            if CurrentShell == "Blank" and NextShell == "Empty": # TODO This shit does NOT work
-                if CurrentTurn == "Player":
-                    print("\n! Player goes first next round. !")
-                    StartingTurn = "P1"
-                    
-                if CurrentTurn == "Dealer":
-                    print("\n! Dealer goes first next round. !")
-                    StartingTurn = "P2"
+            #if CurrentShell == "Blank" and NextShell == "Empty": # This shit does NOT work
+            #    if CurrentTurn == "Player":
+            #        print("\n! Player goes first next round. !")
+            #        StartingTurn = "Player"
+            #        
+            #    if CurrentTurn == "Dealer":
+            #        print("\n! Dealer goes first next round. !")
+            #        StartingTurn = "Dealer"
     
     if Target == "Enemy":
         if CurrentShell == "Blank":
@@ -158,106 +153,10 @@ def ShotTaken(Target):
                 print("\n! PLAYER LOST A LIFE. !")
                 PlayerLives = PlayerLives - 1
 
-######################################## GAME ROUNDS #########################################
-# TODO: Edit so that the game keeps loading new chambers until a player dies. When a player dies, the round should end.
-
-def GameRounds(GameRound, Lives, ShellCount, ShotgunBalance):
-    global PlayerLives
-    global Player2Lives
-    global DealerLives
-
-    if GameRound == 1: # Print Round Number.
-        print("\n##### NEW GAME #####")
-
-        if AILevel == 3:
-            print("\n! THE Dealer's AI difficulty IS SET TO 'CHEATER'. THE DEALER WILL NOT GUESS INCORRECTLY. !")
-
-        print("\n##### ROUND 1 #####")
-    else:
-        print("\n\n##### ROUND", GameRound, "#####")
-    if GameRound == "End":
-        print("\n\n##### GAME OVER #####")
-        Main.Main()
-    
-    if PlayerLives != 0 and Player2Lives != 0 and DealerLives != 0: # Only runs whilst Player 1, Player 2, or The Dealer hasnt died.
-        PlayerLives = Lives # Reset Lives
-        Player2Lives = Lives
-        DealerLives = Lives
-
-    DAI.ResetPredictions() # Reset Dealer's predictions.
-
-    if ShotgunBalance == False: # Load shotgun with random shells.
-        Shotgun.InitialiseShotgun(ShellCount, False)
-    else:
-        Shotgun.InitialiseShotgun(ShellCount, True)
-    
-    #Shotgun.ForceChamber(['B', 'B', 'L', 'L', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'], 5) # Force chamber for testing. See function.
-
-    GUI("Shotgun", "Loaded") # Report that shotgun has been loaded.
-
-    Timer.WaitTime("Reset")  # See function. Reset Dealer RunTime.
-
-    ############## Game Turn Loop ##############
-    CurrentShell = Shotgun.CheckCurrentShell() # Update current shell
-
-    ############## Game Turn Loop ##############
-    while CurrentShell != "Empty": # Only runs whilst shotgun has loaded shells.
-        if GameMode == 1: # Player 1 VS Dealer.
-            ###### Player 1's Turn ######
-            CurrentShell = Shotgun.CheckCurrentShell() # Update current shell for Player's turn.
-            if CurrentShell != "Empty" and PlayerLives != 0 and DealerLives != 0: # Only runs whilst the chamber isnt empty, and whilst Player 1 or The Dealer isnt dead.
-                Player1Turn() # Calls for Player 1's turn.
-            else:
-                if PlayerLives == 0:
-                    GUI("PlayerDied", "Player1") # Report that Player died.
-                if DealerLives == 0:
-                    GUI("PlayerDied", "Dealer") # Report that Dealer died.
-                break
-            ###### Player 1's Turn ######
-
-            ###### Dealer's Turn ######
-            CurrentShell = Shotgun.CheckCurrentShell() # Update current shell for Dealer's turn.
-            if CurrentShell != "Empty" and DealerLives != 0 and PlayerLives != 0: # Only runs whilst the chamber isnt empty, and whilst The Dealer or Player 1 isnt dead.
-                DealersTurn() # Calls for The Dealer's turn.
-            else:
-                if DealerLives == 0:
-                    GUI("PlayerDied", "Dealer") # Report that Dealer died.
-                if PlayerLives == 0:
-                    GUI("PlayerDied", "Player1") # Report that Player died.
-                break
-            ###### Dealer's Turn ######
-        
-        else: # Player 1 VS Player 2.
-            ###### Player 1's Turn ######
-            CurrentShell = Shotgun.CheckCurrentShell() # Update current shell for Player 1's turn.
-            if CurrentShell != "Empty" and PlayerLives != 0 and Player2Lives != 0: # Only runs whilst the chamber isnt empty, and whilst Player 1 or Player 2 isnt dead.
-                Player1Turn() # Calls for Player 1's turn.
-            else:
-                if PlayerLives == 0:
-                    GUI("PlayerDied", "Player1") # Report that Player 1 died.
-                if Player2Lives == 0:
-                    GUI("PlayerDied", "Player2") # Report that Player 2 died.
-                break
-            ###### Player 1's Turn ######
-
-            ###### Player 2's Turn ######
-            CurrentShell = Shotgun.CheckCurrentShell() # Update current shell for Player 2's turn.
-            if CurrentShell != "Empty" and Player2Lives != 0 and PlayerLives != 0: # Only runs whilst the chamber isnt empty, and whilst Player 2 or Player 1 isnt dead.
-                Player2Turn() # Calls for Player 1's turn.
-            else:
-                if Player2Lives == 0:
-                    GUI("PlayerDied", "Player2") # Report that Player 2 died.
-                if PlayerLives == 0:
-                    GUI("PlayerDied", "Player1") # Report that Player 1 died.
-                break
-            ###### Player 2's Turn ######
-
-    ############## Game Turn Loop ##############
-
 ######################################## PLAYER TURNS #########################################
 
 # TODO: Recode to let the player who shot the last bullet in the event that it is a Blank to go first in the next round.
-# ADD ITEMS
+# TODO: ADD ITEMS
 
 def PrintLives():
     if GameMode == 2: # Player 1 VS Player 2.
@@ -268,7 +167,7 @@ def PrintLives():
         print("! You have", PlayerLives, "lives remaining. !")
         print("! The Dealer has", DealerLives, "lives remaining. !")
 
-def Player1Turn():
+def PlayersTurn():
     global CurrentTurn
 
     CurrentTurn = "Player"
@@ -283,7 +182,7 @@ def Player1Turn():
     PrintLives()
 
     Timer.GameWait("Short") # See function.
-    Outcome = PlayerUI.Turn(1)
+    Outcome = PlayerUI.Turn()
     if GameDebug == 1:
         print("\n###DEBUGGING### Player Turn Outcome:", Outcome)
 
@@ -294,43 +193,13 @@ def Player1Turn():
         print("\n- You shoot the Dealer. -")
         ShotTaken("Enemy")
     elif Outcome == "ChoiceFailed":
-        Player1Turn()
+        PlayersTurn()
     else:
         print("\n! Error. Defaulting to shooting The Dealer. !")
         print("\n- You shoot the Dealer. -")
         ShotTaken("Enemy")
 
-def Player2Turn():
-    global CurrentTurn
-
-    CurrentTurn = "Player"
-    
-    #print("\n###DEBUGGING### ! StartingTurn =", StartingTurn, " !")
-    #print("\n###DEBUGGING### ! CurrentTurn =", CurrentTurn, " !")
-    
-    Timer.GameWait("Full") # See function.
-    if GameDebug == 1:
-        GUI("Shotgun", "Report")
-    print("\n### PLAYERS' TURN:")
-    PrintLives()
-
-    Timer.GameWait("Short") # See function.
-    Outcome = PlayerUI.Turn(2)
-    if GameDebug == 1:
-        print("\n###DEBUGGING### Player Turn Outcome:", Outcome)
-
-    if Outcome == "ShootSelf":
-        print("\n- You shoot yourself. -")
-        ShotTaken("Self")
-    elif Outcome == "ShootDealer":
-        print("\n- You shoot the Dealer. -")
-        ShotTaken("Enemy")
-    elif Outcome == "ChoiceFailed":
-        Player2Turn()
-    else:
-        print("\n! Error. Defaulting to shooting The Dealer. !")
-        print("\n- You shoot the Dealer. -")
-        ShotTaken("Enemy")
+    Shotgun.PredictedChamber.pop(0) # Update Dealer AI's Shotgun Prediction Algorithm
 
 def DealersTurn():
     global CurrentTurn
@@ -363,3 +232,5 @@ def DealersTurn():
     if Outcome == "ShootPlayer":
         print("\n- The Dealer shoots you. -")
         ShotTaken("Enemy")
+
+    Shotgun.PredictedChamber.pop(0) # Update Dealer AI's Shotgun Prediction Algorithm

@@ -17,18 +17,18 @@ def DebugMain():
     LM.GameMode = 1
 
     print("\n! Starting game with 'Normal' Dealer AI diffiiculty. !")
-    LM.AILevel = 2
+    LM.AILevel = 3
     
     print("\n! Activating Debugging. !")
         
     print("\n! Toggling Game Debugging. !")
-    LM.GameDebug = 0
+    LM.GameDebug = 1
     
     print("\n! Toggling Dealer Decision Debugging. !")
     LM.DealerDecisionDebug = 0
     
     print("\n! Toggling Dealer Analysis Debugging. !")
-    LM.DealerAnalysisDebug = 0
+    LM.DealerAnalysisDebug = 1
     
     print("\n! Toggling Shotgun Debugging. !")
     LM.ShotgunDebug = 0
@@ -41,5 +41,5 @@ def DebugMain():
 
 ######################################## TESTING STUFF ########################################
 
-#DebugMain()
-Main.Main()
+DebugMain()
+#Main.Main()

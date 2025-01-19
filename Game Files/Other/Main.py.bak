@@ -6,22 +6,115 @@ import DealerAI as DAI
 Debugging = 0
 
 ######################################## GAME ROUNDS ########################################
-# TODO: Add more game rounds. Add custom game rounds.
 
-def EndGame(ShotgunBalance): # Define Game Rounds Here.
-    LM.GameRound = "End"
-    LM.GameRounds(LM.GameRound, 0, 0, ShotgunBalance)
+def GameRounds(GameRound, Lives, ShellCount, ShotgunBalance):
+    #Shotgun.ShellCount = ShellCount
+    #Shotgun.InitialiseShotgun(ShellCount, GameRound)
+    
+    if GameRound == 1: # Print Round Number.
+        print("\n##### NEW GAME #####")
+
+        if LM.AILevel == 3:
+            print("\n! THE Dealer's AI difficulty IS SET TO 'CHEATER'. THE DEALER WILL NOT GUESS INCORRECTLY. !")
+
+        print("\n##### ROUND 1 #####")
+    else:
+        print("\n\n##### ROUND", GameRound, "#####")
+    if GameRound == "End":
+        print("\n\n##### GAME OVER #####")
+        Main()
+    
+    LM.PlayerLives = Lives # Reset Lives
+    LM.Player2Lives = Lives
+    LM.DealerLives = Lives
+
+    Shotgun.ShellCount = ShellCount # Reset Shell Count.
+
+    DAI.ResetPredictions() # Reset Dealer's predictions.
+
+    if ShotgunBalance == False: # Load shotgun with random shells.
+        Shotgun.InitialiseShotgun(ShellCount, False)
+    else:
+        Shotgun.InitialiseShotgun(ShellCount, True)
+    LM.GUI("Shotgun", "Loaded") # Report that shotgun has been loaded.
+
+    Timer.WaitTime("Reset")  # See function. Reset Dealer RunTime.
+
+    ############## Game Turn Loop ##############
+    CurrentShell = Shotgun.CheckCurrentShell() # Update current shell
+
+    #Shotgun.ForceChamber(['B', 'B', 'L', 'L', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'], 5) # See function.
+
+    while CurrentShell != "Empty": # Only runs whilst shotgun has loaded shells.
+        if LM.GameMode == 1: # Player 1 VS Dealer.
+            ###### Player 1's Turn ######
+            CurrentShell = Shotgun.CheckCurrentShell() # Update current shell for Player's turn.
+            if CurrentShell != "Empty" and LM.PlayerLives != 0 and LM.DealerLives != 0: # Only runs whilst the chamber isnt empty, and whilst Player 1 or The Dealer isnt dead.
+                print("\n###DEBUGGING### ! CURRENT SHELL = ", CurrentShell, "!") #########
+                print("###DEBUGGING### ! PLAYER'S TURN. !") #########
+                LM.PlayersTurn() # Calls for Player 1's turn.
+            else:
+                if LM.PlayerLives == 0:
+                    LM.GUI("PlayerDied", "Player1") # Report that Player died.
+                if LM.DealerLives == 0:
+                    LM.GUI("PlayerDied", "Dealer") # Report that Dealer died.
+                break
+            ###### Player 1's Turn ######
+
+            ###### Dealer's Turn ######
+            CurrentShell = Shotgun.CheckCurrentShell() # Update current shell for Dealer's turn.
+            if CurrentShell != "Empty" and LM.DealerLives != 0 and LM.PlayerLives != 0: # Only runs whilst the chamber isnt empty, and whilst The Dealer or Player 1 isnt dead.
+                print("\n###DEBUGGING### ! CURRENT SHELL = ", CurrentShell, "!") #########
+                print("###DEBUGGING### ! DEALER'S TURN. !") #########
+                LM.DealersTurn() # Calls for The Dealer's turn.
+            else:
+                if LM.PlayerLives == 0:
+                    LM.GUI("PlayerDied", "Player1") # Report that Player died.
+                if LM.DealerLives == 0:
+                    LM.GUI("PlayerDied", "Dealer") # Report that Dealer died.
+                break
+            ###### Dealer's Turn ######
+        
+        else: # Player 1 VS Player 2.
+            ###### Player 1's Turn ######
+            CurrentShell = Shotgun.CheckCurrentShell() # Update current shell for Player 1's turn.
+            if CurrentShell != "Empty" and LM.PlayerLives != 0 and LM.Player2Lives != 0: # Only runs whilst the chamber isnt empty, and whilst Player 1 or Player 2 isnt dead.
+                LM.PlayersTurn(1) # Calls for Player 1's turn.
+            else:
+                if LM.PlayerLives == 0:
+                    LM.GUI("PlayerDied", "Player1") # Report that Player died.
+                if LM.Player2Lives == 0:
+                    LM.GUI("PlayerDied", "Player2") # Report that Dealer died.
+                break
+            ###### Player 1's Turn ######
+
+            ###### Player 2's Turn ######
+            CurrentShell = Shotgun.CheckCurrentShell() # Update current shell for Player 2's turn.
+            if CurrentShell != "Empty" and LM.PlayerLives != 0 and LM.Player2Lives != 0: # Only runs whilst the chamber isnt empty, and whilst Player 2 or Player 1 isnt dead.
+                LM.PlayersTurn(2) # Calls for Player 1's turn.
+            else:
+                if LM.PlayerLives == 0:
+                    LM.GUI("PlayerDied", "Player1") # Report that Player died.
+                if LM.Player2Lives == 0:
+                    LM.GUI("PlayerDied", "Player2") # Report that Dealer died.
+                break
+            ###### Player 2's Turn ######
+
+        ############## Game Turn Loop ##############
 
 def StartGame(ShotgunBalance): # Define Game Rounds Here.
-    LM.GameRounds(LM.GameRound, 3, 5, ShotgunBalance)
+    GameRounds(LM.GameRound, 3, 5, ShotgunBalance)
+        
+    LM.GameRound += 1
+    #GameRounds(LM.GameRound, 2, 5, ShotgunBalance)
+    GameRounds(LM.GameRound, 5, 16, ShotgunBalance)
 
-    LM.GameRound += 1 # Increment Game Round.
-    LM.GameRounds(LM.GameRound, 5, 8, ShotgunBalance)
+    LM.GameRound += 1
+    #GameRounds(LM.GameRound, 2, 5, ShotgunBalance)
+    GameRounds(LM.GameRound, 7, 32, ShotgunBalance)
 
-    LM.GameRound += 1 # Increment Game Round.
-    LM.GameRounds(LM.GameRound, 5, 16, ShotgunBalance)
-
-    EndGame(ShotgunBalance)
+    LM.GameRound = "End"
+    GameRounds(LM.GameRound, 0, 0, ShotgunBalance)
 
 ######################################## MAIN RUNTIME ########################################
 
