@@ -16,8 +16,11 @@ def DebugMain():
     print("\n! Selecting Player vs Dealer AI Game Mode. !")
     LM.GameMode = 1
 
+    #print("\n! Selecting Dealer AI vs Dealer AI Game Mode. !")
+    #LM.GameMode = 3
+
     print("\n! Starting game with 'Normal' Dealer AI diffiiculty. !")
-    LM.AILevel = 3
+    LM.AILevel = 2
     
     print("\n! Activating Debugging. !")
         

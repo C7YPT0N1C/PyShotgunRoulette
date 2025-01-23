@@ -42,7 +42,7 @@ def Debug(): # Print variables.
     print("###DEBUGGING### BlankChance:", BlankChance, "% | LiveChance:", LiveChance, "%")
     print("###DEBUGGING### Chance Per Shell = ", ChancePerShell)
 
-######################################## ANALYSIS STUFF ########################################
+######################################## PREDICTION STUFF ########################################
 
 PredictionNum = 0
 PredictionsCorrectNum = 0
@@ -65,34 +65,51 @@ def ResetPredictions():
     PredictionTemperture = 0
     ConfirmPrediction = False
 
-def AnalyseDecision(Decision):
-    global PredictionNum
-    global PredictionsCorrectNum
-    global CurrentPredictionCorrect
-    global PredictionTemperture
-    global ConfirmPrediction ###
+######################################## DECISION STUFF ########################################
+
+def Turn(AILevel):
+    global ChancePerShell
+    global BlankChance
+    global LiveChance
+
+    print("\n(The Dealer is thinking...)")
 
     Timer.WaitTime("Wait") # See function.
+    ChancePerShell = int(100 / (Shotgun.LiveShells + Shotgun.BlankShells)) # Calculate chance for a shell to be shot.
+    BlankChance = (ChancePerShell * Shotgun.BlankShells) # Calculate chance for a blank shell to be shot.
+    LiveChance = (ChancePerShell * Shotgun.LiveShells) # Calculate chance for a live shell to be shot.
 
-    Shotgun.PredictShotgun() # Update Dealer AI's Shotgun Prediction Algorithm.
-    
-    if Shotgun.PredictedChamber[0] == "B": # Store value of Prediction for comparison.
-        Prediction = "Blank"
-    if Shotgun.PredictedChamber[0] == "L": # Store value of Prediction for comparison.
-        Prediction = "Live"
+    if LM.DealerDecisionDebug == 1:
+        Debug() # Print debug.
 
-    if LM.DealerAnalysisDebug == 1: # Print if DealerAnalysisDebug is enabled.
-        Timer.WaitTime("Pause") # See function.
+    ###################### PREDICTION ALGORITHM ######################
+    def AnalyseDecision(Decision):
+        global PredictionNum
+        global PredictionsCorrectNum
+        global CurrentPredictionCorrect
+        global PredictionTemperture
+        global ConfirmPrediction ###
 
-        print("\n###DEBUGGING### UPDATING SHOTGUN PREDICTION ALGORITHM...")
-        print("###DEBUGGING### --Current Shotgun Chamber = ", Shotgun.Shotgun)
-        print("###DEBUGGING### Predicted Shotgun Chamber = ", Shotgun.PredictedChamber)
+        Timer.WaitTime("Wait") # See function.
 
-    PredictionNum = PredictionNum + 1 # Increment PredictionNum.
+        Shotgun.PredictShotgun() # Update Dealer AI's Shotgun Prediction Algorithm.
+        
+        if Shotgun.PredictedChamber[0] == "B": # Store value of Prediction for comparison.
+            Prediction = "Blank"
+        if Shotgun.PredictedChamber[0] == "L": # Store value of Prediction for comparison.
+            Prediction = "Live"
 
-    CurrentPredictionCorrect = False
-    if LM.DealerAnalysisDebug == 1:
-        if Shotgun.BlankShells != 0 and Shotgun.LiveShells != 0: # Print if there is at least 1 of each type of shell left.
+        if LM.DealerAnalysisDebug == 1: # Print if DealerAnalysisDebug is enabled.
+            Timer.WaitTime("Pause") # See function.
+
+            print("\n###DEBUGGING### UPDATING SHOTGUN PREDICTION ALGORITHM...")
+            print("###DEBUGGING### --Current Shotgun Chamber = ", Shotgun.Shotgun)
+            print("###DEBUGGING### Predicted Shotgun Chamber = ", Shotgun.PredictedChamber)
+
+        PredictionNum = PredictionNum + 1 # Increment PredictionNum.
+
+        CurrentPredictionCorrect = False
+        if LM.DealerAnalysisDebug == 1:
             if Shotgun.PredictedChamber[0] == Shotgun.Shotgun[0]: # If Shotgun Chamber Prediction is correct.
                 CurrentPredictionCorrect = True
             else: # If Shotgun Chamber Prediction is incorrect.
@@ -103,34 +120,27 @@ def AnalyseDecision(Decision):
                 print("\n###DEBUGGING### ! (Prediction N/A, Only Blank Shells Remain.) !")
             if Shotgun.BlankShells == 0 and Shotgun.LiveShells != 0: # Print if there only Live Shells left.
                 print("\n###DEBUGGING### ! (Prediction N/A, Only Live Shells Remain.) !")
-    
-    if CurrentPredictionCorrect == True: # If the current prediction is correct.
-        PredictionsCorrectNum = PredictionsCorrectNum + 1
-    else: # If the current prediction is incorrect.
-        PredictionsCorrectNum = PredictionsCorrectNum
-    
-    #PredictionsCorrectNum = PredictionsCorrectNum + 1 if CurrentPredictionCorrect == True else 0 # Increment PredictionsCorrectNum if CurrentPredictionCorrect is True.
-    PredictionTemperture = PredictionsCorrectNum / PredictionNum
-    if PredictionTemperture >= 0.5:
-        ConfirmPrediction = True
-    else:
-        ConfirmPrediction = False
+        
+        if CurrentPredictionCorrect == True: # If the current prediction is correct.
+            PredictionsCorrectNum = PredictionsCorrectNum + 1
+        else: # If the current prediction is incorrect.
+            PredictionsCorrectNum = PredictionsCorrectNum
+        
+        #PredictionsCorrectNum = PredictionsCorrectNum + 1 if CurrentPredictionCorrect == True else 0 # Increment PredictionsCorrectNum if CurrentPredictionCorrect is True.
+        PredictionTemperture = PredictionsCorrectNum / PredictionNum
+        if PredictionTemperture >= 0.5:
+            ConfirmPrediction = True
+        else:
+            ConfirmPrediction = False
 
-    if LM.DealerAnalysisDebug == 1:
-        print("\n###DEBUGGING### ! Current Shell = ", Shotgun.CheckCurrentShell(), "| Decision = ", Decision, "| Prediction = ", Prediction, "!")
-        print("###DEBUGGING### ! Current Prediction Correct? =", CurrentPredictionCorrect, "| Prediction Number =", PredictionNum, "| Correct Predictions Number =", PredictionsCorrectNum, "| Prediction Temperture =", PredictionTemperture, "| Confirm Prediction? =", ConfirmPrediction, "!")
+        if LM.DealerAnalysisDebug == 1:
+            print("\n###DEBUGGING### ! Current Shell = ", Shotgun.CheckCurrentShell(), "| Decision = ", Decision, "| Prediction = ", Prediction, "!")
+            print("###DEBUGGING### ! Current Prediction Correct? =", CurrentPredictionCorrect, "| Prediction Number =", PredictionNum, "| Correct Predictions Number =", PredictionsCorrectNum, "| Prediction Temperture =", PredictionTemperture, "| Confirm Prediction? =", ConfirmPrediction, "!")
 
-        #print("###DEBUGGING### ! Current Prediction Correct? =", CurrentPredictionCorrect, "| Prediction Number =", PredictionNum, "| Correct Predictions Number =", PredictionsCorrectNum, "| Prediction Temperture =", PredictionTemperture, "| Confirm Prediction? =", ConfirmPrediction, "!")
+            #print("###DEBUGGING### ! Current Prediction Correct? =", CurrentPredictionCorrect, "| Prediction Number =", PredictionNum, "| Correct Predictions Number =", PredictionsCorrectNum, "| Prediction Temperture =", PredictionTemperture, "| Confirm Prediction? =", ConfirmPrediction, "!")
 
-    ########################################
+        ########################################
 
-    if Shotgun.BlankShells == 0: # If the remaining shells are live, shoot player.
-        return "ShootPlayer" # Return decision.  
-    
-    elif Shotgun.LiveShells == 0: # If the remaining shells are blank, shoot self.
-        return "ShootSelf" # Return decision.
-    
-    else:
         Timer.WaitTime("ReportToPlayer") # See function.
         if Decision == "Blank": # If the Decision is a Blank shell.
             print("\n(The Dealer thinks it's Blank.)")
@@ -161,24 +171,8 @@ def AnalyseDecision(Decision):
                 else:    
                     print("(After analysing, The Dealer is sure of its initial decision.)")
                     return "ShootPlayer" # Return decision.
-
-######################################## DECISION STUFF ########################################
-
-def Turn(AILevel):
-    global ChancePerShell
-    global BlankChance
-    global LiveChance
-
-    print("\n(The Dealer is thinking...)")
-
-    Timer.WaitTime("Wait") # See function.
-    ChancePerShell = int(100 / (Shotgun.LiveShells + Shotgun.BlankShells)) # Calculate chance for a shell to be shot.
-    BlankChance = (ChancePerShell * Shotgun.BlankShells) # Calculate chance for a blank shell to be shot.
-    LiveChance = (ChancePerShell * Shotgun.LiveShells) # Calculate chance for a live shell to be shot.
-
-    if LM.DealerDecisionDebug == 1:
-        Debug() # Print debug.
-
+    ###################### PREDICTION ALGORITHM ######################
+    
     if AILevel == 1: # "Easy" Difficulty.
         if BlankChance > LiveChance: # If shell more likely to be a blank, shoot player.
             return "ShootSelf" # Return decision.

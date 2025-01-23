@@ -6,22 +6,11 @@ import DealerAI as DAI
 Debugging = 0
 
 ######################################## GAME ROUNDS ########################################
-# TODO: Add more game rounds. Add custom game rounds.
-
-def EndGame(ShotgunBalance): # Define Game Rounds Here.
-    LM.GameRound = "End"
-    LM.GameRounds(LM.GameRound, 0, 0, ShotgunBalance)
+# TODO: Add custom game rounds.
 
 def StartGame(ShotgunBalance): # Define Game Rounds Here.
-    LM.GameRounds(LM.GameRound, 3, 5, ShotgunBalance)
-
-    LM.GameRound += 1 # Increment Game Round.
-    LM.GameRounds(LM.GameRound, 5, 8, ShotgunBalance)
-
-    LM.GameRound += 1 # Increment Game Round.
-    LM.GameRounds(LM.GameRound, 5, 16, ShotgunBalance)
-
-    EndGame(ShotgunBalance)
+    LM.GameRound = 0 # Reset Game Rounds.
+    LM.GameRounds(3, 4, 5, ShotgunBalance)
 
 ######################################## MAIN RUNTIME ########################################
 
@@ -109,13 +98,16 @@ def Main():
     if GameMenu == "1":
         print("\n! Starting Game. !")
         
-        ChooseGameMode = input("\nChoose the Game Mode (1 = Player vs Dealer AI, 2 = Player vs Player): ") # Choose game mode.
+        ChooseGameMode = input("\nChoose the Game Mode (1 = Player vs Dealer AI, 2 = Player vs Player, 3 = Dealer AI vs Dealer AI): ") # Choose game mode.
         if ChooseGameMode == "2":
             #print("\n! Selecting Player vs Player Game Mode. !")
             #LM.GameMode = 2
 
            print("\n! Player vs Player Game Mode has not been implemented. Selecting Player vs Dealer AI Game Mode. !")
            LM.GameMode = 1
+        if ChooseGameMode == "3":
+            print("\n! Selecting Dealer AI vs Dealer AI Game Mode. !")
+            LM.GameMode = 3
         else:
             print("\n! Selecting Player vs Dealer AI Game Mode. !")
             LM.GameMode = 1
